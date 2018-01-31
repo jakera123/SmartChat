@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">SmartChat</string>
+
+
+    <string name="rg_foot_btn01">聊聊</string>
+    <string name="rg_foot_btn02">好友列表</string>
+    <string name="rg_foot_btn03">看看</string>
+    <string name="rg_foot_btn04">我的</string>
+
+
+
+</resources>
