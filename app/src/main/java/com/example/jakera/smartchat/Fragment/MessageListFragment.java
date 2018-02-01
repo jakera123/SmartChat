@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.example.jakera.smartchat.Activity.MainActivity;
 import com.example.jakera.smartchat.Adapter.MessageRecyclerViewAdapter;
 import com.example.jakera.smartchat.Entry.MessageEntry;
+import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
 
 import java.lang.reflect.Array;
@@ -29,7 +30,7 @@ import java.util.List;
  * Created by jakera on 18-1-25.
  */
 
-public class MessageListFragment extends Fragment {
+public class MessageListFragment extends Fragment implements ItemClickListener{
 
     private RecyclerView recyclerView;
     private List<MessageEntry> datas;
@@ -48,14 +49,18 @@ public class MessageListFragment extends Fragment {
         MessageEntry messageEntry0=new MessageEntry();
         datas=new ArrayList<>();
         messageEntry0.setPortrait(BitmapFactory.decodeResource(getResources(),R.drawable.robot_portrait));
-        messageEntry0.setTitle("我叫小乔");
-        messageEntry0.setContent("咱们聊聊吧");
+        messageEntry0.setTitle("我叫小智");
+        messageEntry0.setContent("快来自言智语吧");
         messageEntry0.setTime("2018.3.9");
         datas.add(messageEntry0);
         adapter=new MessageRecyclerViewAdapter();
         adapter.setDatas(datas);
+        adapter.setOnItemClickListener(this);
         recyclerView.setAdapter(adapter);
-
         return view;
+    }
+
+    @Override
+    public void OnItemClick(View v, int position) {
     }
 }
