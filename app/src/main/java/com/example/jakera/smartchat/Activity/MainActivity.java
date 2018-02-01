@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         rb_foot_btn03=(RadioButton)findViewById(R.id.rb_foot_btn03);
         rb_foot_btn04=(RadioButton)findViewById(R.id.rb_foot_btn04);
 
-        radioButtons=new ArrayList<>();
+        radioButtons=new ArrayList<>(4);
         radioButtons.add(rb_foot_btn01);
         radioButtons.add(rb_foot_btn02);
         radioButtons.add(rb_foot_btn03);

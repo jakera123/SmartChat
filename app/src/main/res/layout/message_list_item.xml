@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/iv_message_list_portrait"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_margin="10dp"
+        android:src="@drawable/robot_portrait"/>
+
+    <TextView
+        android:id="@+id/tv_message_list_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:layout_toRightOf="@id/iv_message_list_portrait"
+        android:layout_marginTop="10dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_message_list_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="点进来和我聊天，我能够回答你各种问题哦..."
+        android:layout_toRightOf="@id/iv_message_list_portrait"
+        android:layout_below="@id/tv_message_list_title"
+        android:textSize="15dp"
+        android:layout_marginTop="10dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_message_list_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="早上8：44"
+        android:layout_alignParentRight="true"
+        android:layout_margin="15dp"
+        android:textSize="14dp"
+        />
+
+</RelativeLayout>
