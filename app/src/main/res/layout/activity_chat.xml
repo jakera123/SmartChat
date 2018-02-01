@@ -1,6 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</LinearLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview_chat"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/ll_chat_foot_bar"/>
+
+    <LinearLayout
+        android:id="@+id/ll_chat_foot_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_margin="5dp"
+        >
+
+        <ImageButton
+            android:id="@+id/btn_voice_chat"
+            android:layout_width="28dp"
+            android:layout_height="32dp"
+            android:background="@drawable/voice_chat"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:layout_marginBottom="8dp"
+            />
+
+        <EditText
+            android:id="@+id/et_input_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="60"
+            android:layout_gravity="bottom"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_emoji"
+            android:layout_width="28dp"
+            android:layout_height="32dp"
+            android:background="@drawable/emoji"
+            android:layout_weight="1"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="8dp"
+
+            />
+
+        <TextView
+            android:id="@+id/tv_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/send"
+            android:textSize="18dp"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:padding="5dp"
+            android:layout_gravity="bottom"
+            android:background="#01871e"
+            />
+
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

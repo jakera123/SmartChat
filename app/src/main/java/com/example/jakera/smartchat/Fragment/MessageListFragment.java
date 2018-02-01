@@ -1,5 +1,6 @@
 package com.example.jakera.smartchat.Fragment;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
@@ -16,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.jakera.smartchat.Activity.ChatActivity;
 import com.example.jakera.smartchat.Activity.MainActivity;
 import com.example.jakera.smartchat.Adapter.MessageRecyclerViewAdapter;
 import com.example.jakera.smartchat.Entry.MessageEntry;
@@ -62,5 +64,8 @@ public class MessageListFragment extends Fragment implements ItemClickListener{
 
     @Override
     public void OnItemClick(View v, int position) {
+        Intent intent=new Intent();
+        intent.setClass(getContext(), ChatActivity.class);
+        startActivity(intent);
     }
 }
