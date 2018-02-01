@@ -1,17 +1,8 @@
-package com.example.jakera.smartchat.SpeechRecognizer;
+package com.example.jakera.smartchat.Utils;
 
-import android.nfc.Tag;
 import android.os.Environment;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
-import com.example.jakera.smartchat.Activity.MainActivity;
-import com.example.jakera.smartchat.R;
-import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
-import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechRecognizer;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;

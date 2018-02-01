@@ -34,4 +34,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation files('libs/Msc.jar')
     implementation 'com.android.support:recyclerview-v7:26.0.0-beta1'
+    implementation 'com.squareup.okhttp3:okhttp:3.4.1'
 }
