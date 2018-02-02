@@ -6,15 +6,18 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jakera.smartchat.Adapter.ChatRecyclerViewAdapter;
 import com.example.jakera.smartchat.Entry.BaseMessageEntry;
 import com.example.jakera.smartchat.Entry.TextMessageEntry;
 import com.example.jakera.smartchat.Entry.VoiceMessageEntry;
+import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.Utils.MediaManager;
 import com.example.jakera.smartchat.Utils.OkhttpHelper;
@@ -32,7 +35,7 @@ import okhttp3.Response;
  * Created by jakera on 18-2-1.
  */
 
-public class ChatActivity extends AppCompatActivity implements Callback{
+public class ChatActivity extends AppCompatActivity implements Callback,ItemClickListener{
 
     private String TAG="ChatActivity";
 
@@ -60,8 +63,9 @@ public class ChatActivity extends AppCompatActivity implements Callback{
             @Override
             public void onFinish(float seconds, String filePath) {
                 VoiceMessageEntry voiceMessageEntry=new VoiceMessageEntry(seconds,filePath);
+                Log.i(TAG,filePath);
                 voiceMessageEntry.setPortrait(BitmapFactory.decodeResource(getResources(),R.mipmap.icon));
-                voiceMessageEntry.setViewType(BaseMessageEntry.RECEIVEMESSAGE);
+                voiceMessageEntry.setViewType(BaseMessageEntry.SENDMESSAGE);
                 datas.add(voiceMessageEntry);
                 adapter.notifyDataSetChanged();
                 recyclerView.scrollToPosition(datas.size()-1);
@@ -70,6 +74,7 @@ public class ChatActivity extends AppCompatActivity implements Callback{
         recyclerView=(RecyclerView)findViewById(R.id.recyclerview_chat);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter=new ChatRecyclerViewAdapter();
+        adapter.setOnItemClickListener(this);
 
         datas=new ArrayList<>();
 
@@ -161,5 +166,10 @@ public class ChatActivity extends AppCompatActivity implements Callback{
     protected void onDestroy() {
         super.onDestroy();
         MediaManager.release();
+    }
+
+    @Override
+    public void OnItemClick(View v, int position) {
+        Toast.makeText(this,"positon"+position,Toast.LENGTH_LONG).show();
     }
 }

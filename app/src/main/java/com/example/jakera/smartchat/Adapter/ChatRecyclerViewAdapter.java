@@ -1,6 +1,7 @@
 package com.example.jakera.smartchat.Adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import com.example.jakera.smartchat.Entry.BaseMessageEntry;
 import com.example.jakera.smartchat.Entry.TextMessageEntry;
 import com.example.jakera.smartchat.Entry.VoiceMessageEntry;
+import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.Views.BubbleLinearLayout;
 import com.example.jakera.smartchat.Views.BubbleTextView;
@@ -21,10 +23,16 @@ import java.util.List;
 
 public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
     private List<BaseMessageEntry> datas;
+    private ItemClickListener mItemClickListener;
 
 
     public void setDatas(List<BaseMessageEntry> datas){
         this.datas=datas;
+    }
+
+
+    public void setOnItemClickListener(ItemClickListener itemClickListener){
+        mItemClickListener=itemClickListener;
     }
 
     /**
@@ -63,7 +71,7 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
                     tempHolder.bubble_textview.setVisibility(View.GONE);
                     tempHolder.chat_right_bubble.setVisibility(View.VISIBLE);
                     tempHolder.iv_portrait.setImageBitmap(tempMessage.getPortrait());
-
+                    tempHolder.iv_portrait.setTag(position);
                 }
 
         }else if (getItemViewType(position)==TextMessageEntry.RECEIVEMESSAGE){
@@ -81,7 +89,7 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
                     tempHolder1.bubble_textview.setVisibility(View.GONE);
                     tempHolder1.chat_left_bubble.setVisibility(View.VISIBLE);
                     tempHolder1.iv_portrait.setImageBitmap(tempMessage.getPortrait());
-
+                    tempHolder1.iv_portrait.setTag(position);
                 }
         }
     }
@@ -97,7 +105,7 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
 
-    private class ChatMessageLeftViewHolder extends RecyclerView.ViewHolder{
+    private class ChatMessageLeftViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private ImageView iv_portrait;
         private BubbleTextView bubble_textview;
         private BubbleLinearLayout chat_left_bubble;
@@ -107,10 +115,19 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
             iv_portrait=(ImageView)itemView.findViewById(R.id.iv_chat_left_portrait);
             bubble_textview=(BubbleTextView)itemView.findViewById(R.id.bubble_chat_tv_left);
             chat_left_bubble=(BubbleLinearLayout)itemView.findViewById(R.id.chat_left_bubble);
+            //一定要记得加入这一句，才能成功实现监听
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mItemClickListener!=null){
+                mItemClickListener.OnItemClick(v,(Integer) iv_portrait.getTag());
+            }
         }
     }
 
-    private class ChatMessageRightViewHolder extends RecyclerView.ViewHolder{
+    private class ChatMessageRightViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private ImageView iv_portrait;
         private BubbleTextView bubble_textview;
         private BubbleLinearLayout chat_right_bubble;
@@ -120,6 +137,15 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
             iv_portrait=(ImageView)itemView.findViewById(R.id.iv_chat_right_portrait);
             bubble_textview=(BubbleTextView)itemView.findViewById(R.id.bubble_tv_chat_right);
             chat_right_bubble=(BubbleLinearLayout)itemView.findViewById(R.id.chat_right_bubble);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mItemClickListener!=null){
+                mItemClickListener.OnItemClick(v,(Integer) iv_portrait.getTag());
+            }
+
         }
     }
 
