@@ -36,6 +36,20 @@
             android:layout_gravity="bottom"
             />
 
+        <com.example.jakera.smartchat.Views.AudioRecorderButton
+            android:id="@+id/id_recorder_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="60"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="@string/str_recorder_normal"
+            android:background="@drawable/btn_recorder_normal"
+            android:minHeight="0dp"
+            android:layout_margin="4dp"
+            android:visibility="gone"
+            android:textColor="#727272" />
+
         <ImageButton
             android:id="@+id/btn_emoji"
             android:layout_width="28dp"

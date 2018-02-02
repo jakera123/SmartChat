@@ -11,7 +11,7 @@
         android:layout_margin="10dp"
         android:src="@drawable/robot_portrait"/>
     <com.example.jakera.smartchat.Views.BubbleTextView
-        android:id="@+id/bubble_chat_left"
+        android:id="@+id/bubble_chat_tv_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello BubbleTextVew"
@@ -24,6 +24,45 @@
         app:arrowPosition="10dp"
         app:arrowLocation="left"
         app:bubbleColor="#ff4444"
+        android:visibility="gone"
         />
+
+    <com.example.jakera.smartchat.Views.BubbleLinearLayout
+        android:id="@+id/chat_left_bubble"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp"
+        app:bubbleColor="#04ca04"
+        app:arrowLocation="left"
+        app:arrowWidth="8dp"
+        app:angle="5dp"
+        app:arrowHeight="10dp"
+        app:arrowPosition="10dp"
+        >
+
+        <com.example.jakera.smartchat.Views.BubbleImageView
+            android:id="@+id/id_recorder_anim_left"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@mipmap/chat_sound_left"
+            android:layout_marginLeft="10dp"
+            android:backgroundTint="#d2666466"
+            android:layout_gravity="center_vertical"
+
+            />
+
+        <TextView
+            android:id="@+id/id_recorder_time_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:text=""
+            android:textColor="#ff777777"/>
+
+    </com.example.jakera.smartchat.Views.BubbleLinearLayout>
+
+
+
 
 </LinearLayout>

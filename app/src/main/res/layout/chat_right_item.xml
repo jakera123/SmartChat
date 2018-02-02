@@ -5,26 +5,64 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal">
     <com.example.jakera.smartchat.Views.BubbleTextView
-        android:id="@+id/bubble_chat_right"
+        android:id="@+id/bubble_tv_chat_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello BubbleTextVew"
         android:padding="10dp"
-        android:textColor="@android:color/white"
-        android:layout_marginTop="20dp"
+        android:textColor="@android:color/black"
         android:layout_toLeftOf="@id/iv_chat_right_portrait"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="23dp"
         app:arrowWidth="8dp"
         app:angle="2dp"
         app:arrowHeight="10dp"
         app:arrowPosition="10dp"
         app:arrowLocation="right"
-        app:bubbleColor="#ff4444"
-        />
+        app:bubbleColor="#04ca04"
+        android:visibility="visible"/>
+
+    <com.example.jakera.smartchat.Views.BubbleLinearLayout
+        android:id="@+id/chat_right_bubble"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_toLeftOf="@id/iv_chat_right_portrait"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        app:bubbleColor="#04ca04"
+        app:arrowLocation="right"
+        app:arrowWidth="8dp"
+        app:angle="5dp"
+        app:arrowHeight="10dp"
+        app:arrowPosition="10dp"
+        >
+
+           <com.example.jakera.smartchat.Views.BubbleImageView
+            android:id="@+id/id_recorder_anim_right"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@mipmap/chat_sound_right"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center_vertical"/>
+
+    </com.example.jakera.smartchat.Views.BubbleLinearLayout>
+
+
+    <TextView
+        android:id="@+id/id_recorder_time_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/chat_right_bubble"
+        android:text=""
+        android:textColor="#ff777777"/>
+
 
     <ImageView
         android:id="@+id/iv_chat_right_portrait"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_margin="10dp"
         android:src="@drawable/robot_portrait"
         android:layout_alignParentRight="true"

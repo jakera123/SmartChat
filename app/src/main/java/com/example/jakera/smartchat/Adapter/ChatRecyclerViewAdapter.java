@@ -5,11 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Switch;
 
-import com.example.jakera.smartchat.Entry.ChatMessageEntry;
-import com.example.jakera.smartchat.Entry.MessageEntry;
+import com.example.jakera.smartchat.Entry.BaseMessageEntry;
+import com.example.jakera.smartchat.Entry.TextMessageEntry;
+import com.example.jakera.smartchat.Entry.VoiceMessageEntry;
 import com.example.jakera.smartchat.R;
+import com.example.jakera.smartchat.Views.BubbleLinearLayout;
 import com.example.jakera.smartchat.Views.BubbleTextView;
 
 import java.util.List;
@@ -19,10 +20,10 @@ import java.util.List;
  */
 
 public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
-    private List<ChatMessageEntry> datas;
+    private List<BaseMessageEntry> datas;
 
 
-    public void setDatas(List<ChatMessageEntry> datas){
+    public void setDatas(List<BaseMessageEntry> datas){
         this.datas=datas;
     }
 
@@ -35,10 +36,10 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType){
-            case ChatMessageEntry.RECEIVEMESSAGE:
+            case TextMessageEntry.RECEIVEMESSAGE:
                 ChatMessageLeftViewHolder viewHolder=new ChatMessageLeftViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_left_item,null));
                 return viewHolder;
-            case ChatMessageEntry.SENDMESSAGE:
+            case TextMessageEntry.SENDMESSAGE:
                 ChatMessageRightViewHolder viewHolder1=new ChatMessageRightViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_right_item,null));
                 return viewHolder1;
         }
@@ -47,27 +48,42 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ChatMessageEntry tempMessage;
-        switch (getItemViewType(position)){
-            case ChatMessageEntry.SENDMESSAGE:
-                ChatRecyclerViewAdapter.ChatMessageRightViewHolder tempHolder=(ChatRecyclerViewAdapter.ChatMessageRightViewHolder)holder;
-                tempMessage=datas.get(position);
-                tempHolder.iv_portrait.setImageBitmap(tempMessage.getPortrait());
-                //为Item设置监听所用
-                tempHolder.iv_portrait.setTag(position);
-                tempHolder.bubble_content.setText(tempMessage.getContent());
-                break;
+        if (getItemViewType(position)==TextMessageEntry.SENDMESSAGE) {
+                ChatRecyclerViewAdapter.ChatMessageRightViewHolder tempHolder = (ChatRecyclerViewAdapter.ChatMessageRightViewHolder) holder;
+                if (datas.get(position) instanceof TextMessageEntry){
+                    TextMessageEntry tempMessage = (TextMessageEntry) datas.get(position);
+                    tempHolder.bubble_textview.setVisibility(View.VISIBLE);
+                    tempHolder.chat_right_bubble.setVisibility(View.GONE);
+                    tempHolder.iv_portrait.setImageBitmap(tempMessage.getPortrait());
+                    //为Item设置监听所用
+                    tempHolder.iv_portrait.setTag(position);
+                    tempHolder.bubble_textview.setText(tempMessage.getContent());
+                }else if(datas.get(position) instanceof VoiceMessageEntry){
+                    VoiceMessageEntry tempMessage=(VoiceMessageEntry)datas.get(position);
+                    tempHolder.bubble_textview.setVisibility(View.GONE);
+                    tempHolder.chat_right_bubble.setVisibility(View.VISIBLE);
+                    tempHolder.iv_portrait.setImageBitmap(tempMessage.getPortrait());
 
-            case ChatMessageEntry.RECEIVEMESSAGE:
-                ChatRecyclerViewAdapter.ChatMessageLeftViewHolder tempHolder1=(ChatRecyclerViewAdapter.ChatMessageLeftViewHolder)holder;
-                tempMessage=datas.get(position);
-                tempHolder1.iv_portrait.setImageBitmap(tempMessage.getPortrait());
-                //为Item设置监听所用
-                tempHolder1.iv_portrait.setTag(position);
-                tempHolder1.bubble_content.setText(tempMessage.getContent());
-                break;
+                }
+
+        }else if (getItemViewType(position)==TextMessageEntry.RECEIVEMESSAGE){
+                ChatRecyclerViewAdapter.ChatMessageLeftViewHolder tempHolder1 = (ChatRecyclerViewAdapter.ChatMessageLeftViewHolder) holder;
+                if (datas.get(position) instanceof TextMessageEntry){
+                    TextMessageEntry tempMessage = (TextMessageEntry) datas.get(position);
+                    tempHolder1.iv_portrait.setImageBitmap(tempMessage.getPortrait());
+                    tempHolder1.bubble_textview.setVisibility(View.VISIBLE);
+                    tempHolder1.chat_left_bubble.setVisibility(View.GONE);
+                    //为Item设置监听所用
+                    tempHolder1.iv_portrait.setTag(position);
+                    tempHolder1.bubble_textview.setText(tempMessage.getContent());
+                }else if (datas.get(position) instanceof VoiceMessageEntry){
+                    VoiceMessageEntry tempMessage=(VoiceMessageEntry)datas.get(position);
+                    tempHolder1.bubble_textview.setVisibility(View.GONE);
+                    tempHolder1.chat_left_bubble.setVisibility(View.VISIBLE);
+                    tempHolder1.iv_portrait.setImageBitmap(tempMessage.getPortrait());
+
+                }
         }
-
     }
 
     @Override
@@ -83,23 +99,27 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
 
     private class ChatMessageLeftViewHolder extends RecyclerView.ViewHolder{
         private ImageView iv_portrait;
-        private BubbleTextView bubble_content;
+        private BubbleTextView bubble_textview;
+        private BubbleLinearLayout chat_left_bubble;
 
         public ChatMessageLeftViewHolder(View itemView) {
             super(itemView);
             iv_portrait=(ImageView)itemView.findViewById(R.id.iv_chat_left_portrait);
-            bubble_content=(BubbleTextView)itemView.findViewById(R.id.bubble_chat_left);
+            bubble_textview=(BubbleTextView)itemView.findViewById(R.id.bubble_chat_tv_left);
+            chat_left_bubble=(BubbleLinearLayout)itemView.findViewById(R.id.chat_left_bubble);
         }
     }
 
     private class ChatMessageRightViewHolder extends RecyclerView.ViewHolder{
         private ImageView iv_portrait;
-        private BubbleTextView bubble_content;
+        private BubbleTextView bubble_textview;
+        private BubbleLinearLayout chat_right_bubble;
 
         public ChatMessageRightViewHolder(View itemView) {
             super(itemView);
             iv_portrait=(ImageView)itemView.findViewById(R.id.iv_chat_right_portrait);
-            bubble_content=(BubbleTextView)itemView.findViewById(R.id.bubble_chat_right);
+            bubble_textview=(BubbleTextView)itemView.findViewById(R.id.bubble_tv_chat_right);
+            chat_right_bubble=(BubbleLinearLayout)itemView.findViewById(R.id.chat_right_bubble);
         }
     }
 

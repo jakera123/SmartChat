@@ -3,16 +3,13 @@ package com.example.jakera.smartchat.Entry;
 import android.graphics.Bitmap;
 
 /**
- * Created by jakera on 18-2-1.
+ * Created by jakera on 18-2-2.
  */
 
-public class ChatMessageEntry {
-
+public class BaseMessageEntry {
     public final static int SENDMESSAGE=0;
     public final static int RECEIVEMESSAGE=1;
-
     private Bitmap portrait;
-    private String content;
     private int viewType=1;
 
     public int getViewType() {
@@ -23,19 +20,11 @@ public class ChatMessageEntry {
         this.viewType = viewType;
     }
 
-    public Bitmap getPortrait() {
-        return portrait;
-    }
-
     public void setPortrait(Bitmap portrait) {
         this.portrait = portrait;
     }
+    public Bitmap getPortrait() {
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
+        return portrait;
     }
 }
