@@ -2,6 +2,7 @@ package com.example.jakera.smartchat.Utils;
 
 
 import android.media.MediaRecorder;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,8 @@ public class AudioManager {
     private String mCurrentFilePath;
 
     private boolean isPrepared;
+
+    private String TAG="AudioManager";
 
     private static AudioManager mInstance;
     private AudioManager(String dir){

@@ -6,6 +6,7 @@ package com.example.jakera.smartchat.Utils;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -23,6 +24,8 @@ public class DialogManager {
     private TextView mLable;
 
     private Context mContext;
+
+    private String TAG="DialogManager";
 
     public DialogManager(Context context){
         mContext = context;
@@ -87,11 +90,8 @@ public class DialogManager {
      */
     public void updateVoiceLevel(int level){
         if (mDialog != null && mDialog.isShowing()) {
-            //	mIcon.setVisibility(View.VISIBLE);
-            //	mVoice.setVisibility(View.VISIBLE);
-            //	mLable.setVisibility(View.VISIBLE);
-
-            int resId = mContext.getResources().getIdentifier("v"+level, "drawable",
+            //这里注意你放V1-V7的位置，若在drawable目录下，则defType为drawable,若放在mipmap下,则改为drawable.
+            int resId = mContext.getResources().getIdentifier("v"+level, "mipmap",
                     mContext.getPackageName());
             mVoice.setImageResource(resId);
         }

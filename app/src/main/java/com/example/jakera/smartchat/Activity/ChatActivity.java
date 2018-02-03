@@ -1,8 +1,13 @@
 package com.example.jakera.smartchat.Activity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -170,6 +175,13 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
 
     @Override
     public void OnItemClick(View v, int position) {
-        Toast.makeText(this,"positon"+position,Toast.LENGTH_LONG).show();
+        if(datas.get(position) instanceof VoiceMessageEntry){
+            MediaManager.playSound(((VoiceMessageEntry) datas.get(position)).getFilePath(), new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+
+                }
+            });
+        }
     }
 }

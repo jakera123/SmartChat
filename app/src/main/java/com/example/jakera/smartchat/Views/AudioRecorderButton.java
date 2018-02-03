@@ -23,6 +23,8 @@ import com.example.jakera.smartchat.Utils.DialogManager;
 @SuppressLint("AppCompatCustomView")
 public class AudioRecorderButton extends Button implements AudioManager.AudioStateListener {
 
+    private String TAG="AUDIORECORDERBUTTON";
+
     private static final int DISTANCE_Y_CANCEL = 50;
 
     private static final int STATE_NORMAL = 1; //默认状态
