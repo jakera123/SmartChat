@@ -172,7 +172,6 @@ public class AudioRecorderButton extends Button implements AudioManager.AudioSta
                 }else if (mCurState == STATE_RECORDING) { //正常录制结束
                     mDialogManager.dimissDialog();
                     mAudioManager.release();
-
                     if (mListener != null) {
                         mListener.onFinish(mTime, mAudioManager.getCurrentFilePath());
                     }

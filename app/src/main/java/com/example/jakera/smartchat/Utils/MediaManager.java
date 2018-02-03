@@ -31,6 +31,8 @@ public class MediaManager {
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setOnCompletionListener(onCompletionListener);
             mMediaPlayer.setDataSource(filePath);
+            //一定要加入这句才能够正常地录音
+            mMediaPlayer.prepare();
             mMediaPlayer.start();
         } catch (Exception e) {
             // TODO: handle exception
