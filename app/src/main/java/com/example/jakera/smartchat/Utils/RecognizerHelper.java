@@ -119,7 +119,8 @@ public class RecognizerHelper {
         if (re_number!= ErrorCode.SUCCESS){
             Log.i(TAG,"fail to recognizer.....");
         }else {
-            byte[] audioData=RecognizerUtil.readAudioFile(context,filename);
+            //byte[] audioData=RecognizerUtil.readAudioFile(context,filename);
+            byte[] audioData = RecognizerUtil.readAudioFilePath(filename);
             Log.i(TAG,"recognizer......");
             if (audioData!=null){
                 // 一次（也可以分多次）写入音频文件数据，数据格式必须是采样率为8KHz或16KHz（本地识别只支持16K采样率，云端都支持），
@@ -137,6 +138,15 @@ public class RecognizerHelper {
         }
 
     }
+
+
+    public void recognizeStreamFromPath(String filePath) {
+
+
+    }
+
+
+
 
     /**
      * 听写监听器

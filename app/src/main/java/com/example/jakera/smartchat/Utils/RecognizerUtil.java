@@ -1,4 +1,8 @@
 package com.example.jakera.smartchat.Utils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -141,5 +145,34 @@ public class RecognizerUtil {
 		
 		return null;
 	}
+
+    /**
+     * 根据路径将声音流进行解析
+     *
+     * @param filePath
+     * @return
+     */
+    public static byte[] readAudioFilePath(String filePath) {
+        File f = new File(filePath);
+        byte[] data = new byte[(int) f.length()];     //创建合适文件大小的数组
+        InputStream in = null;
+        try {
+            in = new FileInputStream(f);
+            in.read(data);    //读取文件中的内容到b[]数组
+            in.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return data;
+    }
+
+
+
+
+
+
 	
 }
