@@ -180,13 +180,7 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
     @Override
     public void OnItemClick(View v, int position) {
         if(datas.get(position) instanceof VoiceMessageEntry){
-            Log.i(TAG,((VoiceMessageEntry) datas.get(position)).getFilePath());
-            MediaManager.playSound(((VoiceMessageEntry) datas.get(position)).getFilePath(), new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-
-                }
-            });
+            MediaManager.playSound(((VoiceMessageEntry) datas.get(position)).getFilePath(),null);
         }
     }
 

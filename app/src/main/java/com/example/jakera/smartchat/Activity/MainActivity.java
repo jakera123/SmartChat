@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.jakera.smartchat.Fragment.SmartChatFragmentAdapter;
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.SmartChatConstant;
+import com.example.jakera.smartchat.Utils.AudioRecorderUtil;
 import com.example.jakera.smartchat.Utils.RecognizerHelper;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechError;
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     private RecognizerHelper recognizerHelper;
     private RecognizerDialog mReconizerDialog;
 
+    private AudioRecorderUtil audioRecorderUtil;
+
 
 
     @Override
@@ -67,12 +70,14 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
         speechRecognizer=SpeechRecognizer.createRecognizer(this,null);
         mReconizerDialog=new RecognizerDialog(this,null);
-        recognizerHelper=new RecognizerHelper(speechRecognizer,mReconizerDialog);
+        recognizerHelper=new RecognizerHelper(this,speechRecognizer,mReconizerDialog);
         recognizerHelper.setListener(this);
 
 
         mSmartChatFragmentAdapter=new SmartChatFragmentAdapter(getSupportFragmentManager());
         initView();
+
+        audioRecorderUtil=AudioRecorderUtil.getInstance();
 
 
     }
@@ -155,19 +160,21 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                     rb_foot_btn02.setChecked(true);
                     rb_foot_btn02.setButtonTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_TWO);
+                    audioRecorderUtil.startRecord();
                     break;
                 case SmartChatConstant.PAGE_THREE:
                     rb_foot_btn03.setChecked(true);
                     rb_foot_btn03.setBackgroundTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_THREE);
+                    audioRecorderUtil.stopRecord();
+                    audioRecorderUtil.recordData();
                     break;
                 case SmartChatConstant.PAGE_FOUR:
                     rb_foot_btn04.setChecked(true);
                     rb_foot_btn04.setForegroundTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_FOUR);
+                    recognizerHelper.recognizeStream("t.wav");
                     break;
-
-
             }
 
 

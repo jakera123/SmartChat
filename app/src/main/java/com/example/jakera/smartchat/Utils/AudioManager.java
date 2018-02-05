@@ -12,6 +12,12 @@ import java.util.UUID;
  * Created by jakera on 18-2-2.
  */
 
+/**
+ * 使用MediaRecorder类录音，输出amr格式文件。录音20s，输出的音频文件大概为33K（已写测试代码）
+ * ffmpeg -i D:\Testaudio\dizi.mp3 -ar 8000 -ac 1 -acodec pcm_u8 d:\testaudio\dizi.wav
+ * linux下，可用sox对音频文件进行转换及处理
+ */
+
 public class AudioManager {
     private MediaRecorder mMediaRecorder;
 

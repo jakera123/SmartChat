@@ -1,11 +1,13 @@
 package com.example.jakera.smartchat.Adapter;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.jakera.smartchat.Entry.BaseMessageEntry;
 import com.example.jakera.smartchat.Entry.TextMessageEntry;
@@ -62,6 +64,7 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
                     TextMessageEntry tempMessage = (TextMessageEntry) datas.get(position);
                     tempHolder.bubble_textview.setVisibility(View.VISIBLE);
                     tempHolder.chat_right_bubble.setVisibility(View.GONE);
+                    tempHolder.id_recorder_time_right.setVisibility(View.GONE);
                     tempHolder.iv_portrait.setImageBitmap(tempMessage.getPortrait());
                     //为Item设置监听所用
                     tempHolder.iv_portrait.setTag(position);
@@ -69,9 +72,11 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
                 }else if(datas.get(position) instanceof VoiceMessageEntry){
                     VoiceMessageEntry tempMessage=(VoiceMessageEntry)datas.get(position);
                     tempHolder.bubble_textview.setVisibility(View.GONE);
+                    tempHolder.id_recorder_time_right.setVisibility(View.VISIBLE);
                     tempHolder.chat_right_bubble.setVisibility(View.VISIBLE);
                     tempHolder.iv_portrait.setImageBitmap(tempMessage.getPortrait());
                     tempHolder.iv_portrait.setTag(position);
+                    tempHolder.id_recorder_time_right.setText((int)tempMessage.getTime()+"");
                 }
 
         }else if (getItemViewType(position)==TextMessageEntry.RECEIVEMESSAGE){
@@ -131,12 +136,14 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
         private ImageView iv_portrait;
         private BubbleTextView bubble_textview;
         private BubbleLinearLayout chat_right_bubble;
+        private TextView id_recorder_time_right;
 
         public ChatMessageRightViewHolder(View itemView) {
             super(itemView);
             iv_portrait=(ImageView)itemView.findViewById(R.id.iv_chat_right_portrait);
             bubble_textview=(BubbleTextView)itemView.findViewById(R.id.bubble_tv_chat_right);
             chat_right_bubble=(BubbleLinearLayout)itemView.findViewById(R.id.chat_right_bubble);
+            id_recorder_time_right=(TextView)itemView.findViewById(R.id.id_recorder_time_right);
             itemView.setOnClickListener(this);
         }
 
