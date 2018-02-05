@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -167,13 +168,12 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                     rb_foot_btn03.setBackgroundTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_THREE);
                     audioRecorderUtil.stopRecord();
-                    audioRecorderUtil.recordData();
                     break;
                 case SmartChatConstant.PAGE_FOUR:
                     rb_foot_btn04.setChecked(true);
                     rb_foot_btn04.setForegroundTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_FOUR);
-                    recognizerHelper.recognizeStream("t.wav");
+                    recognizerHelper.recognizeStream(Environment.getExternalStorageDirectory() + "/smart_chat_recorder_audios/yinfu.pcm");
                     break;
             }
 

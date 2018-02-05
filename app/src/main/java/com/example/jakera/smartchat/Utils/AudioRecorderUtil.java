@@ -4,6 +4,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -12,6 +13,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+/**
+ * 直接调用其startRecord()
+ * 结束，直接调用stopRecord()
+ */
 
 
 public class AudioRecorderUtil {
@@ -38,14 +44,17 @@ public class AudioRecorderUtil {
     private File wavFile;
     //文件输出流
     private OutputStream os;
-    //文件根目录
-    private String basePath = Environment.getExternalStorageState()+"/smart_chat_recorder_audios/";
+    //文件根目录   storage/emulated/0/                之前写错成state得到的结果是mounted已挂载
+    private String basePath = Environment.getExternalStorageDirectory() + "/smart_chat_recorder_audios";
     //wav文件目录
     private String outFileName = basePath+"/yinfu.wav";
     //pcm文件目录
     private String inFileName = basePath+"/yinfu.pcm";
 
+    private String TAG = "AudioRecorderUtil";
+
     private AudioRecorderUtil(){
+        Log.i(TAG, "create");
         createFile();//创建文件
         recorder = new AudioRecord(audioSource,audioRate,audioChannel,audioFormat,bufferSize);
     }
@@ -68,16 +77,19 @@ public class AudioRecorderUtil {
     public void startRecord(){
         isRecording = true;
         recorder.startRecording();
+        recordData();
     }
 
     //停止录音
     public void stopRecord(){
         isRecording = false;
         recorder.stop();
+        convertWaveFile();
     }
 
     //将数据写入文件夹,文件的写入没有做优化
     public void writeData(){
+        Log.i(TAG, "line84,writerData");
         noteArray = new byte[bufferSize];
         //建立文件输出流
         try {
@@ -134,8 +146,10 @@ public class AudioRecorderUtil {
     }
 
     /* 任何一种文件在头部添加相应的头文件才能够确定的表示这种文件的格式，wave是RIFF文件结构，每一部分为一个chunk，其中有RIFF WAVE chunk， FMT Chunk，Fact chunk,Data chunk,其中Fact chunk是可以选择的， */
+    //一定要调用这个才能够正常地生成wav
     private void WriteWaveFileHeader(FileOutputStream out, long totalAudioLen, long totalDataLen, long longSampleRate,
                                      int channels, long byteRate) throws IOException {
+        Log.i(TAG, "WriteWaveFileHeader......");
         byte[] header = new byte[44];
         header[0] = 'R'; // RIFF
         header[1] = 'I';
@@ -210,7 +224,7 @@ public class AudioRecorderUtil {
             pcmFile.createNewFile();
             wavFile.createNewFile();
         }catch(IOException e){
-
+            Log.e(TAG, e.toString());
         }
     }
 
