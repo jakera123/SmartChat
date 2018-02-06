@@ -35,4 +35,8 @@ dependencies {
     implementation files('libs/Msc.jar')
     implementation 'com.android.support:recyclerview-v7:26.0.0-beta1'
     implementation 'com.squareup.okhttp3:okhttp:3.4.1'
+    implementation files('libs/YoudaoBase.jar')
+    implementation files('libs/YoudaoCnDictOffline.jar')
+    implementation files('libs/YoudaoTranslateOffline.jar')
+    implementation files('libs/YoudaoTranslateOnline.jar')
 }

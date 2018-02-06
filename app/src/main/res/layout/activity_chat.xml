@@ -51,10 +51,10 @@
             android:textColor="#727272" />
 
         <ImageButton
-            android:id="@+id/btn_emoji"
+            android:id="@+id/btn_select_language"
             android:layout_width="28dp"
             android:layout_height="32dp"
-            android:background="@drawable/emoji"
+            android:background="@drawable/chinese"
             android:layout_weight="1"
             android:layout_gravity="bottom"
             android:layout_marginBottom="8dp"

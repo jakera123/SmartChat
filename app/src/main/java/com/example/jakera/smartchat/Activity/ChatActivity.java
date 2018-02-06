@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,10 +27,23 @@ import com.example.jakera.smartchat.Entry.TextMessageEntry;
 import com.example.jakera.smartchat.Entry.VoiceMessageEntry;
 import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
+import com.example.jakera.smartchat.SmartChatConstant;
 import com.example.jakera.smartchat.Utils.MediaManager;
 import com.example.jakera.smartchat.Utils.OkhttpHelper;
 import com.example.jakera.smartchat.Utils.SpeechSynthesizerUtil;
+import com.example.jakera.smartchat.Utils.TranslateUtil;
 import com.example.jakera.smartchat.Views.AudioRecorderButton;
+import com.youdao.sdk.app.Language;
+import com.youdao.sdk.app.LanguageUtils;
+import com.youdao.sdk.app.YouDaoApplication;
+import com.youdao.sdk.chdict.ChDictTranslate;
+import com.youdao.sdk.chdict.ChDictor;
+import com.youdao.sdk.chdict.DictListener;
+import com.youdao.sdk.ydonlinetranslate.Translator;
+import com.youdao.sdk.ydtranslate.Translate;
+import com.youdao.sdk.ydtranslate.TranslateErrorCode;
+import com.youdao.sdk.ydtranslate.TranslateListener;
+import com.youdao.sdk.ydtranslate.TranslateParameters;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,16 +70,17 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
 
     private OkhttpHelper okhttpHelper;
 
-    private ImageButton btn_voice_chat;
+    private ImageButton btn_voice_chat, btn_btn_select_language;
 
     private AudioRecorderButton mAudioRecorderButton;
 
     private boolean isVoiceMode=false;
 
+    private boolean isChinese = true;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SpeechSynthesizerUtil.getInstance().init(ChatActivity.this);
         setContentView(R.layout.activity_chat);
         mAudioRecorderButton=(AudioRecorderButton)findViewById(R.id.id_recorder_button);
         mAudioRecorderButton.setAudioFinishRecorderListener(new AudioRecorderButton.AudioFinishRecorderListener() {
@@ -132,6 +147,20 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
             }
         });
 
+        btn_btn_select_language = (ImageButton) findViewById(R.id.btn_select_language);
+        btn_btn_select_language.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isChinese) {
+                    isChinese = false;
+                    btn_btn_select_language.setBackground(getResources().getDrawable(R.drawable.english));
+                } else {
+                    isChinese = true;
+                    btn_btn_select_language.setBackground(getResources().getDrawable(R.drawable.chinese));
+                }
+            }
+        });
+
         datas.add(messageEntry0);
 
         adapter.setDatas(datas);
@@ -180,11 +209,40 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
     }
 
     @Override
-    public void OnItemClick(View v, int position) {
+    public void OnItemClick(View v, final int position) {
         if(datas.get(position) instanceof VoiceMessageEntry){
             MediaManager.playSound(((VoiceMessageEntry) datas.get(position)).getFilePath(),null);
         } else if (datas.get(position) instanceof TextMessageEntry) {
-            SpeechSynthesizerUtil.getInstance().speakText(((TextMessageEntry) datas.get(position)).getContent());
+            String fromLanguage, toLanguage;
+            if (isChinese) {
+                fromLanguage = "英文";
+                toLanguage = "中文";
+            } else {
+                fromLanguage = "中文";
+                toLanguage = "英文";
+            }
+            String content = ((TextMessageEntry) datas.get(position)).getContent();
+            TranslateUtil.translate(fromLanguage, toLanguage, content, new TranslateListener() {
+                @Override
+                public void onError(TranslateErrorCode translateErrorCode, String s) {
+
+                }
+
+                @Override
+                public void onResult(Translate translate, String s, String s1) {
+                    if (translate.getTranslations().size() > 0) {
+                        ((TextMessageEntry) datas.get(position)).setContent(translate.getTranslations().get(0));
+                        SpeechSynthesizerUtil.getInstance().speakText(translate.getTranslations().get(0));
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+
+                    }
+                }
+            });
         }
     }
 
