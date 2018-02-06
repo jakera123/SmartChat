@@ -28,6 +28,7 @@ import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.Utils.MediaManager;
 import com.example.jakera.smartchat.Utils.OkhttpHelper;
+import com.example.jakera.smartchat.Utils.SpeechSynthesizerUtil;
 import com.example.jakera.smartchat.Views.AudioRecorderButton;
 
 import java.io.IOException;
@@ -64,6 +65,7 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SpeechSynthesizerUtil.getInstance().init(ChatActivity.this);
         setContentView(R.layout.activity_chat);
         mAudioRecorderButton=(AudioRecorderButton)findViewById(R.id.id_recorder_button);
         mAudioRecorderButton.setAudioFinishRecorderListener(new AudioRecorderButton.AudioFinishRecorderListener() {
@@ -181,6 +183,8 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
     public void OnItemClick(View v, int position) {
         if(datas.get(position) instanceof VoiceMessageEntry){
             MediaManager.playSound(((VoiceMessageEntry) datas.get(position)).getFilePath(),null);
+        } else if (datas.get(position) instanceof TextMessageEntry) {
+            SpeechSynthesizerUtil.getInstance().speakText(((TextMessageEntry) datas.get(position)).getContent());
         }
     }
 

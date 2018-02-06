@@ -22,6 +22,7 @@ import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.SmartChatConstant;
 import com.example.jakera.smartchat.Utils.AudioRecorderUtil;
 import com.example.jakera.smartchat.Utils.RecognizerHelper;
+import com.example.jakera.smartchat.Utils.SpeechSynthesizerUtil;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechRecognizer;
@@ -54,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     private RecognizerHelper recognizerHelper;
     private RecognizerDialog mReconizerDialog;
 
-    private AudioRecorderUtil audioRecorderUtil;
 
 
 
@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         mSmartChatFragmentAdapter=new SmartChatFragmentAdapter(getSupportFragmentManager());
         initView();
 
-        audioRecorderUtil=AudioRecorderUtil.getInstance();
 
 
     }
@@ -161,13 +160,11 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                     rb_foot_btn02.setChecked(true);
                     rb_foot_btn02.setButtonTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_TWO);
-                    audioRecorderUtil.startRecord();
                     break;
                 case SmartChatConstant.PAGE_THREE:
                     rb_foot_btn03.setChecked(true);
                     rb_foot_btn03.setBackgroundTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_THREE);
-                    audioRecorderUtil.stopRecord();
                     break;
                 case SmartChatConstant.PAGE_FOUR:
                     rb_foot_btn04.setChecked(true);
