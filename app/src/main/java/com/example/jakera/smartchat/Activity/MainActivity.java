@@ -77,9 +77,6 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
         mSmartChatFragmentAdapter=new SmartChatFragmentAdapter(getSupportFragmentManager());
         initView();
-
-
-
     }
 
     private void initView() {

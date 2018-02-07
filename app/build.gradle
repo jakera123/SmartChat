@@ -39,4 +39,9 @@ dependencies {
     implementation files('libs/YoudaoCnDictOffline.jar')
     implementation files('libs/YoudaoTranslateOffline.jar')
     implementation files('libs/YoudaoTranslateOnline.jar')
+
+    //加入极光的推送及IM
+    implementation files('libs/jmessage-android_v2.4.1.jar')
+    implementation files('libs/jpush-android-3.1.1.jar')
+    implementation files('libs/jcore-android-1.1.9.jar')
 }

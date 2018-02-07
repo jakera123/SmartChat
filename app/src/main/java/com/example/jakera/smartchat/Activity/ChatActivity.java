@@ -1,15 +1,9 @@
 package com.example.jakera.smartchat.Activity;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +13,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.jakera.smartchat.Adapter.ChatRecyclerViewAdapter;
 import com.example.jakera.smartchat.Entry.BaseMessageEntry;
@@ -27,23 +20,14 @@ import com.example.jakera.smartchat.Entry.TextMessageEntry;
 import com.example.jakera.smartchat.Entry.VoiceMessageEntry;
 import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
-import com.example.jakera.smartchat.SmartChatConstant;
 import com.example.jakera.smartchat.Utils.MediaManager;
 import com.example.jakera.smartchat.Utils.OkhttpHelper;
 import com.example.jakera.smartchat.Utils.SpeechSynthesizerUtil;
 import com.example.jakera.smartchat.Utils.TranslateUtil;
 import com.example.jakera.smartchat.Views.AudioRecorderButton;
-import com.youdao.sdk.app.Language;
-import com.youdao.sdk.app.LanguageUtils;
-import com.youdao.sdk.app.YouDaoApplication;
-import com.youdao.sdk.chdict.ChDictTranslate;
-import com.youdao.sdk.chdict.ChDictor;
-import com.youdao.sdk.chdict.DictListener;
-import com.youdao.sdk.ydonlinetranslate.Translator;
 import com.youdao.sdk.ydtranslate.Translate;
 import com.youdao.sdk.ydtranslate.TranslateErrorCode;
 import com.youdao.sdk.ydtranslate.TranslateListener;
-import com.youdao.sdk.ydtranslate.TranslateParameters;
 
 import java.io.IOException;
 import java.util.ArrayList;
