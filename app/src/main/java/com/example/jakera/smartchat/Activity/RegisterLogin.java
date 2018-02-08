@@ -55,7 +55,7 @@ public class RegisterLogin extends AppCompatActivity implements View.OnClickList
 
         setContentView(R.layout.activity_register_login);
         getSupportActionBar().hide();
-        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         initView();
 

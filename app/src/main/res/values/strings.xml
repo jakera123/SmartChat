@@ -14,6 +14,9 @@
     <string name="str_recorder_want_cancel">松开手指，取消发送</string>
 
 
+    <string name="jumping">正在跳转</string>
+
+
     <string name="register">注册</string>
     <string name="login">登录</string>
     <string name="ok">确定</string>

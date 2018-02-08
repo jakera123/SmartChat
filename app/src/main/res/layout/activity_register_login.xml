@@ -15,7 +15,7 @@
         app:layout_constraintEnd_toEndOf="@id/constraintLayout"
         app:layout_constraintStart_toStartOf="@id/constraintLayout"
         app:layout_constraintTop_toBottomOf="@id/constraintLayout"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="40dp" />
 
     <LinearLayout
         android:id="@+id/ll_login_tittle_bar"

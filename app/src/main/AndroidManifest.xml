@@ -56,17 +56,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name=".SmartChatApp">
-        <activity android:name=".Activity.MainActivity">
+        <activity android:name=".Activity.MainActivity" />
+        <activity android:name=".Activity.ChatActivity"/>
+
+
+        <activity android:name=".Activity.RegisterLogin" />
+        <activity android:name=".Activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.ChatActivity"/>
-
-
-        <activity android:name=".Activity.RegisterLogin" />
 
 
         <!--&lt;!&ndash; since 3.1.0 Required SDK 核心功能&ndash;&gt;-->
