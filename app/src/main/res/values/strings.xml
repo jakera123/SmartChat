@@ -13,4 +13,22 @@
     <string name="str_recorder_recording">松开 发送</string>
     <string name="str_recorder_want_cancel">松开手指，取消发送</string>
 
+
+    <string name="register">注册</string>
+    <string name="login">登录</string>
+    <string name="ok">确定</string>
+
+    <string name="announce">%s表示你同意该软件用户服务协议和隐私政策</string>
+
+    <string name="tip_username_null">用户名不能为空！</string>
+    <string name="tip_password_null">密码不能为空!</string>
+    <string name="tip_password_not_consistent">两次输入密码不正确，请重新输入！</string>
+    <string name="register_success">注册成功！</string>
+    <string name="register_fail">注册失败!请检测网络是否连接！</string>
+    <string name="register_already">帐号已被注册</string>
+    <string name="invalid_password">密码输入错误</string>
+    <string name="login_fail">登陆失败，请检查是否正常联网</string>
+
+    <string name="permission_granted">恭喜你，授权成功</string>
+
 </resources>

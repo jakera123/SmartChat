@@ -66,6 +66,9 @@
         <activity android:name=".Activity.ChatActivity"/>
 
 
+        <activity android:name=".Activity.RegisterLogin" />
+
+
         <!--&lt;!&ndash; since 3.1.0 Required SDK 核心功能&ndash;&gt;-->
         <!--<provider-->
         <!--android:authorities="com.example.jakera.smartchat.DownloadProvider"-->
