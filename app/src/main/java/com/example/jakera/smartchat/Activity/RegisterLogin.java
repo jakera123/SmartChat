@@ -1,6 +1,7 @@
 package com.example.jakera.smartchat.Activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jakera.smartchat.R;
+import com.example.jakera.smartchat.SmartChatConstant;
+import com.example.jakera.smartchat.Utils.SharePreferenceUtils;
 
 import org.w3c.dom.Text;
 
@@ -133,6 +136,10 @@ public class RegisterLogin extends AppCompatActivity implements View.OnClickList
                                 public void gotResult(int i, String s) {
                                     if (i == 0) {
                                         Toast.makeText(RegisterLogin.this, getString(R.string.register_success), Toast.LENGTH_SHORT).show();
+                                        SharePreferenceUtils.put(RegisterLogin.this, SmartChatConstant.SPISLOGINKEY, true);
+                                        Intent intent = new Intent(RegisterLogin.this, MainActivity.class);
+                                        startActivity(intent);
+                                        RegisterLogin.this.finish();
                                     } else if (i == 898001) {
                                         Toast.makeText(RegisterLogin.this, getString(R.string.register_already), Toast.LENGTH_SHORT).show();
                                     } else {
@@ -154,7 +161,10 @@ public class RegisterLogin extends AppCompatActivity implements View.OnClickList
                             if (i == 801004) {
                                 Toast.makeText(RegisterLogin.this, getString(R.string.invalid_password), Toast.LENGTH_SHORT).show();
                             } else if (i == 0) {
-                                //登陆成功
+                                SharePreferenceUtils.put(RegisterLogin.this, SmartChatConstant.SPISLOGINKEY, true);
+                                Intent intent = new Intent(RegisterLogin.this, MainActivity.class);
+                                startActivity(intent);
+                                RegisterLogin.this.finish();
                             } else {
                                 Toast.makeText(RegisterLogin.this, getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
                             }

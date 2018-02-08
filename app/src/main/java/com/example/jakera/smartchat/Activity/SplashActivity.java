@@ -10,6 +10,8 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.example.jakera.smartchat.R;
+import com.example.jakera.smartchat.SmartChatConstant;
+import com.example.jakera.smartchat.Utils.SharePreferenceUtils;
 
 /**
  * Created by jakera on 18-2-8.
@@ -34,8 +36,15 @@ public class SplashActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(SplashActivity.this, RegisterLogin.class);
-                startActivity(intent);
+                if ((Boolean) SharePreferenceUtils.get(SplashActivity.this, SmartChatConstant.SPISLOGINKEY, false)) {
+                    Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(SplashActivity.this, RegisterLogin.class);
+                    startActivity(intent);
+                }
+                SplashActivity.this.finish();
+
             }
         }, 5000);
 

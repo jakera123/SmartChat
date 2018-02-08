@@ -45,7 +45,7 @@ public class AudioRecorderUtil {
     //文件输出流
     private OutputStream os;
     //文件根目录   storage/emulated/0/                之前写错成state得到的结果是mounted已挂载
-    private String basePath = Environment.getExternalStorageDirectory() + "/smart_chat_recorder_audios";
+    private String basePath = Environment.getExternalStorageDirectory() + "/smart_chat";
     //wav文件目录
     private String outFileName = basePath+"/yinfu.wav";
     //pcm文件目录

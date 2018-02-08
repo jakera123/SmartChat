@@ -21,6 +21,8 @@ public class SmartChatConstant {
 
     public static String APPNAME = "smartchat";
 
+    public static final String SPISLOGINKEY = "isLogin";
+
 
 
 }
