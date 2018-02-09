@@ -53,7 +53,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         btn_exit_login.setOnClickListener(this);
         tv_title_bar_center = (TextView) findViewById(R.id.tv_title_bar_center);
         tv_title_bar_center.setText(getString(R.string.person_info));
-        iv_user_info_back = (ImageView) findViewById(R.id.iv_user_info_back);
+        iv_user_info_back = (ImageView) findViewById(R.id.iv_title_bar_back);
         iv_user_info_back.setVisibility(View.VISIBLE);
         iv_user_info_back.setOnClickListener(this);
         relate_userinfo_portrait = (RelativeLayout) findViewById(R.id.relate_userinfo_portrait);
@@ -71,11 +71,12 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 startActivity(intent);
                 UserInfoActivity.this.finish();
                 break;
-            case R.id.iv_user_info_back:
+            case R.id.iv_title_bar_back:
                 UserInfoActivity.this.onBackPressed();
                 break;
             case R.id.relate_userinfo_portrait:
-
+                Intent intent1 = new Intent(UserInfoActivity.this, ModifyPortraitActivity.class);
+                startActivity(intent1);
                 break;
         }
     }

@@ -9,13 +9,14 @@
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
-        <!--ImageButton不可以使用-->
+        <!--ImageButton使用tint，背景不透明-->
         <ImageView
-            android:id="@+id/iv_user_info_back"
+            android:id="@+id/iv_title_bar_back"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:src="@drawable/back"
             android:tint="@color/white"
+            android:visibility="gone"
             android:layout_marginLeft="5dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true" />
@@ -28,6 +29,17 @@
             android:layout_centerHorizontal="true"
             android:textSize="20dp"
             android:textColor="@color/white" />
+
+        <ImageView
+            android:id="@+id/iv_title_bar_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/more"
+            android:tint="@color/white"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:visibility="gone"
+            android:layout_marginRight="10dp" />
 
     </RelativeLayout>
 

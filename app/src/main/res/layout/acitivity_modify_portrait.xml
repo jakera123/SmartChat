@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#d2131212"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/user_info_title_bar"
+        layout="@layout/title_bar" />
+
+    <ImageView
+        android:id="@+id/iv_modify_user_portrait"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:background="@drawable/robot_portrait"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>
