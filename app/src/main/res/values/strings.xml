@@ -20,6 +20,7 @@
     <string name="register">注册</string>
     <string name="login">登录</string>
     <string name="ok">确定</string>
+    <string name="exit">退出登陆</string>
 
     <string name="announce">%s表示你同意该软件用户服务协议和隐私政策</string>
 
@@ -33,5 +34,16 @@
     <string name="login_fail">登陆失败，请检查是否正常联网</string>
 
     <string name="permission_granted">恭喜你，授权成功</string>
+
+    <string name="about_developer">联系开发者</string>
+
+
+    <string name="portrait">头像</string>
+    <string name="nickname">昵称</string>
+    <string name="age">年龄</string>
+    <string name="sex">姓别</string>
+    <string name="phone">手机</string>
+
+    <string name="login_now">正在登陆...</string>
 
 </resources>

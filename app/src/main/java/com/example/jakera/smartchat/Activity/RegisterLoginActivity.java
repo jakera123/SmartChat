@@ -1,6 +1,5 @@
 package com.example.jakera.smartchat.Activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -22,8 +20,7 @@ import android.widget.Toast;
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.SmartChatConstant;
 import com.example.jakera.smartchat.Utils.SharePreferenceUtils;
-
-import org.w3c.dom.Text;
+import com.example.jakera.smartchat.Views.LoadingDialog;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.api.BasicCallback;
@@ -32,7 +29,7 @@ import cn.jpush.im.api.BasicCallback;
  * Created by jakera on 18-2-7.
  */
 
-public class RegisterLogin extends AppCompatActivity implements View.OnClickListener {
+public class RegisterLoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private LinearLayout ll_tab_register, ll_tab_login;
     private TextView tv_tab_register, tv_tab_login;
@@ -42,6 +39,7 @@ public class RegisterLogin extends AppCompatActivity implements View.OnClickList
     private SpannableString registerSpannableString, loginSpannableString;
     private Button btn_regist_login_commit;
     private boolean isRegister = true;
+    private LoadingDialog loadingDialog;
 
     private String TAG = "RegisterLosin";
 
@@ -91,6 +89,9 @@ public class RegisterLogin extends AppCompatActivity implements View.OnClickList
 
         btn_regist_login_commit = (Button) findViewById(R.id.btn_regist_login_commit);
         btn_regist_login_commit.setOnClickListener(this);
+
+        loadingDialog = new LoadingDialog(RegisterLoginActivity.this);
+        loadingDialog.setCanceledOnTouchOutside(false);
     }
 
 
@@ -130,20 +131,23 @@ public class RegisterLogin extends AppCompatActivity implements View.OnClickList
                         break;
                     } else {
                         if (et_password.getText().toString().equals(et_check_password.getText().toString())) {
+
+                            loadingDialog.show();
                             //执行注册逻辑
                             JMessageClient.register(et_username.getText().toString(), et_password.getText().toString(), new BasicCallback() {
                                 @Override
                                 public void gotResult(int i, String s) {
+                                    loadingDialog.dismiss();
                                     if (i == 0) {
-                                        Toast.makeText(RegisterLogin.this, getString(R.string.register_success), Toast.LENGTH_SHORT).show();
-                                        SharePreferenceUtils.put(RegisterLogin.this, SmartChatConstant.SPISLOGINKEY, true);
-                                        Intent intent = new Intent(RegisterLogin.this, MainActivity.class);
+                                        Toast.makeText(RegisterLoginActivity.this, getString(R.string.register_success), Toast.LENGTH_SHORT).show();
+                                        SharePreferenceUtils.put(RegisterLoginActivity.this, SmartChatConstant.SPISLOGINKEY, true);
+                                        Intent intent = new Intent(RegisterLoginActivity.this, MainActivity.class);
                                         startActivity(intent);
-                                        RegisterLogin.this.finish();
+                                        RegisterLoginActivity.this.finish();
                                     } else if (i == 898001) {
-                                        Toast.makeText(RegisterLogin.this, getString(R.string.register_already), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(RegisterLoginActivity.this, getString(R.string.register_already), Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(RegisterLogin.this, getString(R.string.register_fail), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(RegisterLoginActivity.this, getString(R.string.register_fail), Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
@@ -155,18 +159,20 @@ public class RegisterLogin extends AppCompatActivity implements View.OnClickList
                     }
 
                 } else {
+                    loadingDialog.show();
                     JMessageClient.login(et_username.getText().toString(), et_password.getText().toString(), new BasicCallback() {
                         @Override
                         public void gotResult(int i, String s) {
+                            loadingDialog.dismiss();
                             if (i == 801004) {
-                                Toast.makeText(RegisterLogin.this, getString(R.string.invalid_password), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(RegisterLoginActivity.this, getString(R.string.invalid_password), Toast.LENGTH_SHORT).show();
                             } else if (i == 0) {
-                                SharePreferenceUtils.put(RegisterLogin.this, SmartChatConstant.SPISLOGINKEY, true);
-                                Intent intent = new Intent(RegisterLogin.this, MainActivity.class);
+                                SharePreferenceUtils.put(RegisterLoginActivity.this, SmartChatConstant.SPISLOGINKEY, true);
+                                Intent intent = new Intent(RegisterLoginActivity.this, MainActivity.class);
                                 startActivity(intent);
-                                RegisterLogin.this.finish();
+                                RegisterLoginActivity.this.finish();
                             } else {
-                                Toast.makeText(RegisterLogin.this, getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(RegisterLoginActivity.this, getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });

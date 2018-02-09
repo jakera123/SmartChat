@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/transparent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/linearLayout_loading_dialog"
+        android:layout_width="260dp"
+        android:layout_height="100dp"
+        android:background="@drawable/dialog_loading_bg"
+        android:orientation="horizontal">
+
+        <ProgressBar
+            android:id="@+id/dialog_progressBar"
+            style="?android:attr/progressBarStyleInverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+
+            android:background="@android:color/transparent" />
+
+        <TextView
+            android:id="@+id/tv_dialog_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:textSize="25dp"
+            android:text="@string/login_now"
+            android:textColor="#fff" />
+    </LinearLayout>
+</LinearLayout>

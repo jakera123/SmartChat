@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().hide();
        //请注意，录音为危险权限，所以在android 6.0以上版本的手机上要进行动态申请.使用前可先做权限判断
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,

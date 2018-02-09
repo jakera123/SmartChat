@@ -1,7 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#eef218">
+    android:background="#6a999999"
+    android:orientation="vertical">
+
+    <!--当 android:orientation="vertical"  时， 只有水平方向的设置才起作用，垂直方向的设置不起作用。即：left，right，center_horizontal 是生效的。
+当 android:orientation="horizontal" 时， 只有垂直方向的设置才起作用，水平方向的设置不起作用。即：top，bottom，center_vertical 是生效的。-->
+
+    <!--高斯模糊背景-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:background="@mipmap/sunset">
+
+        <com.example.jakera.smartchat.Views.CircleImageView
+            android:id="@+id/iv_user_portrait"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/robot_portrait"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            app:civ_border_width="2dp"
+            app:civ_border_color="#fffcfc" />
+
+        <TextView
+            android:id="@+id/tv_userinfo_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="#d4f4f0f0"
+            android:textSize="18sp"
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/iv_user_portrait"
+            android:layout_centerHorizontal="true" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/authenticatication"
+            android:layout_below="@id/tv_userinfo_username"
+            android:layout_centerHorizontal="true"
+            android:backgroundTint="#df89f7" />
+
+        <ImageView
+            android:id="@+id/iv_modify_user_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/modify"
+            android:backgroundTint="#fffcfc"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="10dp"
+        android:background="#8f07010d" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/person"
+        android:drawableRight="@mipmap/back"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="20dp"
+        android:background="#d6ffffff" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#8f07010d" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/person"
+        android:drawableRight="@mipmap/back"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="20dp"
+        android:background="#d6ffffff"
+
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#8f07010d" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/person"
+        android:drawableRight="@mipmap/back"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="20dp"
+        android:background="#d6ffffff" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#8f07010d" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/person"
+        android:drawableRight="@mipmap/back"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="20dp"
+        android:background="#d6ffffff" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#8f07010d" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/person"
+            android:drawableRight="@mipmap/back"
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="20dp"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_vertical"
+            android:background="#d6ffffff"
+            android:text="@string/about_developer"
+            android:textSize="24sp" />
+    </RelativeLayout>
+
 
 </LinearLayout>

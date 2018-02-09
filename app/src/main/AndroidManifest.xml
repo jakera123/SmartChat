@@ -59,8 +59,8 @@
         <activity android:name=".Activity.MainActivity" />
         <activity android:name=".Activity.ChatActivity"/>
 
-
-        <activity android:name=".Activity.RegisterLogin" />
+        <activity android:name=".Activity.UserInfoActivity" />
+        <activity android:name=".Activity.RegisterLoginActivity" />
         <activity android:name=".Activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#45d9d6d6"
+    android:orientation="vertical">
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="20dp"
+        android:background="#8f07010d" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/portrait"
+        android:drawableRight="@mipmap/back"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="20dp"
+        android:background="#d6ffffff"
+        android:textSize="20sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#8f07010d" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/nickname"
+        android:drawableRight="@mipmap/back"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="20dp"
+        android:background="#d6ffffff"
+        android:textSize="20sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#8f07010d" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="20dp"
+        android:background="#8f07010d" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sex"
+        android:drawableRight="@mipmap/back"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="20dp"
+        android:background="#d6ffffff"
+        android:textSize="20sp"
+
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#8f07010d" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/age"
+        android:drawableRight="@mipmap/back"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="20dp"
+        android:background="#d6ffffff"
+        android:textSize="20sp"
+
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#8f07010d" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/phone"
+        android:drawableRight="@mipmap/back"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="20dp"
+        android:background="#d6ffffff"
+        android:textSize="20sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#8f07010d" />
+
+
+    <Button
+        android:id="@+id/btn_exit_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/exit"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/btn_red_round_shape"
+        android:layout_marginHorizontal="20dp"
+        android:textSize="20sp"
+        android:textColor="#ffffff" />
+
+
+</LinearLayout>
