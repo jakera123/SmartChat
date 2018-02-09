@@ -45,5 +45,6 @@
     <string name="phone">手机</string>
 
     <string name="login_now">正在登陆...</string>
+    <string name="person_info">个人资料</string>
 
 </resources>

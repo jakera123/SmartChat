@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.jakera.smartchat.Activity.MainActivity;
 import com.example.jakera.smartchat.R;
 
 /**
@@ -21,6 +22,11 @@ public class WatchMoreFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.watch_more_fragment,container,false);
+        initView();
         return view;
+    }
+
+    public void initView() {
+        //   ((MainActivity)getActivity()).setTitlebar(this);
     }
 }

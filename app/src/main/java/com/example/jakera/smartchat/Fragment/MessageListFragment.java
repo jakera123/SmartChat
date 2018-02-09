@@ -59,6 +59,7 @@ public class MessageListFragment extends Fragment implements ItemClickListener{
         adapter.setDatas(datas);
         adapter.setOnItemClickListener(this);
         recyclerView.setAdapter(adapter);
+        initView();
         return view;
     }
 
@@ -67,5 +68,9 @@ public class MessageListFragment extends Fragment implements ItemClickListener{
         Intent intent=new Intent();
         intent.setClass(getContext(), ChatActivity.class);
         startActivity(intent);
+    }
+
+    public void initView() {
+        // ((MainActivity)getActivity()).setTitlebar(this);
     }
 }

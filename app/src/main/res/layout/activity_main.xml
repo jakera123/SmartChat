@@ -5,12 +5,17 @@
     android:layout_height="match_parent"
     tools:context="com.example.jakera.smartchat.Activity.MainActivity">
 
+    <include
+        android:id="@+id/main_title_bar"
+        layout="@layout/title_bar" />
+
 
     <android.support.v4.view.ViewPager
         android:id="@+id/mainViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/spilt_line"
+        android:layout_below="@id/main_title_bar"
         />
 
     <View

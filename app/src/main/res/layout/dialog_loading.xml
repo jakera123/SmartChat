@@ -12,6 +12,7 @@
         android:background="@drawable/dialog_loading_bg"
         android:orientation="horizontal">
 
+        <!--反转样式，即与背景颜色相反-->
         <ProgressBar
             android:id="@+id/dialog_progressBar"
             style="?android:attr/progressBarStyleInverse"

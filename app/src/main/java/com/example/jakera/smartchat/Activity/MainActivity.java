@@ -6,18 +6,28 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jakera.smartchat.Fragment.FriendsListFragment;
+import com.example.jakera.smartchat.Fragment.MessageListFragment;
 import com.example.jakera.smartchat.Fragment.SmartChatFragmentAdapter;
+import com.example.jakera.smartchat.Fragment.UserInfoFragment;
+import com.example.jakera.smartchat.Fragment.WatchMoreFragment;
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.SmartChatConstant;
 import com.example.jakera.smartchat.Utils.AudioRecorderUtil;
@@ -55,12 +65,22 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     private RecognizerHelper recognizerHelper;
     private RecognizerDialog mReconizerDialog;
 
+    private RelativeLayout ralat_layout_title_bar;
+    private TextView tv_title_bar_center;
+
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Window window = getWindow();
+        //取消设置透明状态栏,使 ContentView 内容不再覆盖状态栏
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //需要设置这个 flag 才能调用 setStatusBarColor 来设置状态栏颜色
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        //设置状态栏颜色
+        window.setStatusBarColor(Color.BLACK);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
        //请注意，录音为危险权限，所以在android 6.0以上版本的手机上要进行动态申请.使用前可先做权限判断
@@ -81,6 +101,10 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     }
 
     private void initView() {
+
+        ralat_layout_title_bar = (RelativeLayout) findViewById(R.id.ralat_main_title_bar);
+        tv_title_bar_center = (TextView) findViewById(R.id.tv_title_bar_center);
+
         rg_foot_bar=(RadioGroup)findViewById(R.id.rg_foot_bar);
         rb_foot_btn01=(RadioButton)findViewById(R.id.rb_foot_btn01);
         rb_foot_btn02=(RadioButton)findViewById(R.id.rb_foot_btn02);
@@ -108,6 +132,8 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                 recognizerHelper.startSpeechRecognizer();
             }
         });
+
+        setTitlebar(SmartChatConstant.PAGE_ONE);
 
     }
 
@@ -153,22 +179,26 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                 case SmartChatConstant.PAGE_ONE:
                     rb_foot_btn01.setChecked(true);
                     changeRadioButtonState(SmartChatConstant.PAGE_ONE);
+                    setTitlebar(SmartChatConstant.PAGE_ONE);
                     break;
                 case SmartChatConstant.PAGE_TWO:
                     rb_foot_btn02.setChecked(true);
                     rb_foot_btn02.setButtonTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_TWO);
+                    setTitlebar(SmartChatConstant.PAGE_TWO);
                     break;
                 case SmartChatConstant.PAGE_THREE:
                     rb_foot_btn03.setChecked(true);
                     rb_foot_btn03.setBackgroundTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_THREE);
+                    setTitlebar(SmartChatConstant.PAGE_THREE);
                     break;
                 case SmartChatConstant.PAGE_FOUR:
                     rb_foot_btn04.setChecked(true);
                     rb_foot_btn04.setForegroundTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_FOUR);
-                    recognizerHelper.recognizeStream(Environment.getExternalStorageDirectory() + "/smart_chat_recorder_audios/yinfu.pcm");
+//                    recognizerHelper.recognizeStream(Environment.getExternalStorageDirectory() + "/smart_chat_recorder_audios/yinfu.pcm");
+                    setTitlebar(SmartChatConstant.PAGE_FOUR);
                     break;
             }
 
@@ -245,5 +275,26 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     @Override
     public void onError(SpeechError speechError) {
 
+    }
+
+    public void setTitlebar(int page) {
+        Log.i(TAG, TAG + page);
+        switch (page) {
+            case SmartChatConstant.PAGE_ONE:
+                ralat_layout_title_bar.setVisibility(View.VISIBLE);
+                tv_title_bar_center.setText(getString(R.string.rg_foot_btn01));
+                break;
+            case SmartChatConstant.PAGE_TWO:
+                ralat_layout_title_bar.setVisibility(View.VISIBLE);
+                tv_title_bar_center.setText(getString(R.string.rg_foot_btn02));
+                break;
+            case SmartChatConstant.PAGE_THREE:
+                ralat_layout_title_bar.setVisibility(View.VISIBLE);
+                tv_title_bar_center.setText(getString(R.string.rg_foot_btn03));
+                break;
+            case SmartChatConstant.PAGE_FOUR:
+                ralat_layout_title_bar.setVisibility(View.GONE);
+                break;
+        }
     }
 }
