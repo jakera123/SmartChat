@@ -129,11 +129,12 @@
             android:drawableRight="@mipmap/foreward"
             android:paddingVertical="10dp"
             android:paddingHorizontal="20dp"
+            android:drawablePadding="10dp"
             android:layout_alignParentBottom="true"
             android:gravity="center_vertical"
             android:background="#d6ffffff"
             android:text="@string/about_developer"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
     </RelativeLayout>
 
 

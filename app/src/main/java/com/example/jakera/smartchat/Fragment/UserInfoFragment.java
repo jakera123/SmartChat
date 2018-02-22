@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jakera.smartchat.Activity.MainActivity;
 import com.example.jakera.smartchat.Activity.UserInfoActivity;
@@ -28,6 +29,7 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
     private String TAG = "UserInfoFragment";
     private View layout;
     private UserInfo userInfo;
+    private LoadUserInfo loadUserInfo;
     public UserInfoFragment() {
     }
 
@@ -35,7 +37,6 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         layout = inflater.inflate(R.layout.user_info_fragment, container, false);
-        userInfo = JMessageClient.getMyInfo();
         initView();
         return layout;
     }
@@ -45,7 +46,11 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
         iv_modify_user_info = (ImageView) layout.findViewById(R.id.iv_modify_user_info);
         iv_modify_user_info.setOnClickListener(this);
         tv_userinfo_username = (TextView) layout.findViewById(R.id.tv_userinfo_username);
-        tv_userinfo_username.setText(userInfo.getUserName());
+        loadUserInfo = new LoadUserInfo();
+        loadUserInfo.start();
+//        if (userInfo!=null){
+//            tv_userinfo_username.setText(userInfo.getUserName());
+//        }
         // ((MainActivity)getActivity()).setTitlebar(this);
     }
 
@@ -61,5 +66,41 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
 
         }
 
+    }
+
+    class LoadUserInfo extends Thread {
+        @Override
+        public void run() {
+            while (userInfo == null) {
+                userInfo = JMessageClient.getMyInfo();
+                try {
+                    Thread.sleep(1000);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (userInfo == null) {
+                                Toast.makeText(getContext(), getResources().getString(R.string.fail_get_userinfo), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (userInfo != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv_userinfo_username.setText(userInfo.getUserName());
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        loadUserInfo.destroy();
     }
 }

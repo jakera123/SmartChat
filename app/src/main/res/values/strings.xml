@@ -52,4 +52,7 @@
     <string name="select_from_gallery">从手机相册中选择</string>
     <string name="save_photo">保存图片</string>
     <string name="cancel">取消</string>
+
+    <string name="fail_get_userinfo">获取用户信息失败</string>
+
 </resources>
