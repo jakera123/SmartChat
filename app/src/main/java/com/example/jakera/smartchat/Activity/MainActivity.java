@@ -1,9 +1,12 @@
 package com.example.jakera.smartchat.Activity;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -16,6 +19,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -42,6 +46,9 @@ import com.iflytek.cloud.ui.RecognizerDialogListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.jpush.im.android.api.ContactManager;
+import cn.jpush.im.api.BasicCallback;
+
 public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener,ViewPager.OnPageChangeListener,RecognizerDialogListener{
 
 
@@ -67,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
     private RelativeLayout ralat_layout_title_bar;
     private TextView tv_title_bar_center;
+    private ImageView iv_title_bar_more;
 
 
 
@@ -104,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
         ralat_layout_title_bar = (RelativeLayout) findViewById(R.id.ralat_main_title_bar);
         tv_title_bar_center = (TextView) findViewById(R.id.tv_title_bar_center);
+        iv_title_bar_more = (ImageView) findViewById(R.id.iv_title_bar_more);
 
         rg_foot_bar=(RadioGroup)findViewById(R.id.rg_foot_bar);
         rb_foot_btn01=(RadioButton)findViewById(R.id.rb_foot_btn01);
@@ -283,17 +292,59 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
             case SmartChatConstant.PAGE_ONE:
                 ralat_layout_title_bar.setVisibility(View.VISIBLE);
                 tv_title_bar_center.setText(getString(R.string.rg_foot_btn01));
+                iv_title_bar_more.setVisibility(View.INVISIBLE);
                 break;
             case SmartChatConstant.PAGE_TWO:
                 ralat_layout_title_bar.setVisibility(View.VISIBLE);
                 tv_title_bar_center.setText(getString(R.string.rg_foot_btn02));
+                iv_title_bar_more.setVisibility(View.VISIBLE);
+                iv_title_bar_more.setImageResource(R.drawable.icon_add_friends);
+                iv_title_bar_more.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        View view = getLayoutInflater().inflate(R.layout.dialog_add_friends, null);
+                        final EditText editText = (EditText) view.findViewById(R.id.et_dialog_add_friends);
+                        AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
+                                .setIcon(R.mipmap.icon)//设置标题的图片
+                                .setTitle(getResources().getString(R.string.add_friends))//设置对话框的标题
+                                .setView(view)
+                                .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String username = editText.getText().toString();
+                                        ContactManager.sendInvitationRequest(username, null, "hello", new BasicCallback() {
+                                            @Override
+                                            public void gotResult(int responseCode, String responseMessage) {
+                                                if (0 == responseCode) {
+                                                    //好友请求请求发送成功
+                                                    Log.i(TAG, "添加好友，请求成功" + responseMessage);
+                                                } else {
+                                                    //好友请求发送失败
+                                                    Log.i(TAG, "添加好友，请求失败" + responseMessage);
+                                                }
+                                            }
+                                        });
+                                        dialog.dismiss();
+                                    }
+                                }).create();
+                        dialog.show();
+                    }
+                });
                 break;
             case SmartChatConstant.PAGE_THREE:
                 ralat_layout_title_bar.setVisibility(View.VISIBLE);
                 tv_title_bar_center.setText(getString(R.string.rg_foot_btn03));
+                iv_title_bar_more.setVisibility(View.INVISIBLE);
                 break;
             case SmartChatConstant.PAGE_FOUR:
                 ralat_layout_title_bar.setVisibility(View.GONE);
+                iv_title_bar_more.setVisibility(View.INVISIBLE);
                 break;
         }
     }

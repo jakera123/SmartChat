@@ -140,10 +140,22 @@ public class RegisterLoginActivity extends AppCompatActivity implements View.OnC
                                     loadingDialog.dismiss();
                                     if (i == 0) {
                                         Toast.makeText(RegisterLoginActivity.this, getString(R.string.register_success), Toast.LENGTH_SHORT).show();
-                                        SharePreferenceUtils.put(RegisterLoginActivity.this, SmartChatConstant.SPISLOGINKEY, true);
-                                        Intent intent = new Intent(RegisterLoginActivity.this, MainActivity.class);
-                                        startActivity(intent);
-                                        RegisterLoginActivity.this.finish();
+                                        JMessageClient.login(et_username.getText().toString(), et_password.getText().toString(), new BasicCallback() {
+                                            @Override
+                                            public void gotResult(int i, String s) {
+                                                loadingDialog.dismiss();
+                                                if (i == 801004) {
+                                                    Toast.makeText(RegisterLoginActivity.this, getString(R.string.invalid_password), Toast.LENGTH_SHORT).show();
+                                                } else if (i == 0) {
+                                                    SharePreferenceUtils.put(RegisterLoginActivity.this, SmartChatConstant.SPISLOGINKEY, true);
+                                                    Intent intent = new Intent(RegisterLoginActivity.this, MainActivity.class);
+                                                    startActivity(intent);
+                                                    RegisterLoginActivity.this.finish();
+                                                } else {
+                                                    Toast.makeText(RegisterLoginActivity.this, getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
                                     } else if (i == 898001) {
                                         Toast.makeText(RegisterLoginActivity.this, getString(R.string.register_already), Toast.LENGTH_SHORT).show();
                                     } else {

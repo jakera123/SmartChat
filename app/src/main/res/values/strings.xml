@@ -55,4 +55,12 @@
 
     <string name="fail_get_userinfo">获取用户信息失败</string>
 
+    <string name="add_friends">添加好友</string>
+    <string name="friend_invite_received">收到好友请求</string>
+    <string name="friend_invite_tip">想要加你为好友</string>
+    <string name="friend_invite_accept">恭喜你，添加好友成功</string>
+    <string name="friend_invite_reject">很抱歉，对方拒绝了你的请求</string>
+
+    <string name="accept">接收</string>
+    <string name="reject">拒绝</string>
 </resources>
