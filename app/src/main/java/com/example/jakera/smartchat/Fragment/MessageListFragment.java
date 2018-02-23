@@ -67,6 +67,9 @@ public class MessageListFragment extends Fragment implements ItemClickListener{
     public void OnItemClick(View v, int position) {
         Intent intent=new Intent();
         intent.setClass(getContext(), ChatActivity.class);
+        Bundle data = new Bundle();
+        data.putString("username", getString(R.string.app_name));
+        intent.putExtra("username", data);
         startActivity(intent);
     }
 

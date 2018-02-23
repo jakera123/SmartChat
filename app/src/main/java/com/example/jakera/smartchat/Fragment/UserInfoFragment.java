@@ -101,6 +101,5 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        loadUserInfo.destroy();
     }
 }

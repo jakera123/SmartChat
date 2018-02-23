@@ -23,23 +23,28 @@ public class SmartChatApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Log.i("SmartChat","i am onCreate....");
-        //讯飞语音初始化工作
-        SpeechUtility.createUtility(this, SpeechConstant.APPID+"="+APPID);
-        //讯飞文本生成初始化工作
-        SpeechSynthesizerUtil.getInstance().init(this);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //讯飞语音初始化工作
+                SpeechUtility.createUtility(SmartChatApp.this, SpeechConstant.APPID + "=" + APPID);
+                //讯飞文本生成初始化工作
+                SpeechSynthesizerUtil.getInstance().init(SmartChatApp.this);
 
-        //有道智云初始化工作
-        YouDaoApplication.init(this, SmartChatConstant.YOUDAOAPIKEY);
+                //有道智云初始化工作
+                YouDaoApplication.init(SmartChatApp.this, SmartChatConstant.YOUDAOAPIKEY);
 
 
-        //极光推送
-        JPushInterface.setDebugMode(true);
-        JPushInterface.init(this);
-        //极光即时通信
-        JMessageClient.setDebugMode(true);
-        JMessageClient.init(this);
+                //极光推送
+                JPushInterface.setDebugMode(true);
+                JPushInterface.init(SmartChatApp.this);
+                //极光即时通信
+                JMessageClient.setDebugMode(true);
+                JMessageClient.init(SmartChatApp.this);
+            }
+        }).start();
 
+        Log.i("SmartChat", "i am onCreate....");
 
 
 

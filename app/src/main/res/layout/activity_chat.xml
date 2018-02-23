@@ -3,11 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include
+        android:id="@+id/chat_activity_title_bar"
+        layout="@layout/title_bar" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_chat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/ll_chat_foot_bar"/>
+        android:layout_above="@id/ll_chat_foot_bar"
+        android:layout_below="@id/chat_activity_title_bar" />
 
     <LinearLayout
         android:id="@+id/ll_chat_foot_bar"

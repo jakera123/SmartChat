@@ -45,7 +45,7 @@ public class FriendsListRecyclerAdapter extends RecyclerView.Adapter {
         FriendsViewHolder friendsViewHolder = (FriendsViewHolder) holder;
         UserInfo userInfo = datas.get(position);
 //        TODO:更改头像
-//        friendsViewHolder.iv_portrait.setBackground();
+        friendsViewHolder.iv_portrait.setTag(position);
         friendsViewHolder.tv_username.setText(userInfo.getUserName());
     }
 
