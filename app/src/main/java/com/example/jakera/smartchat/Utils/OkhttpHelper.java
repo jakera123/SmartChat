@@ -57,6 +57,14 @@ public class OkhttpHelper {
         client.newCall(request).enqueue(callback);
     }
 
+    public void getByUrl(String url) {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(callback);
+
+    }
+
 
     public String parseTuLingResult(String json){
         String result="不想理你";

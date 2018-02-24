@@ -6,6 +6,9 @@ package com.example.jakera.smartchat;
 
 public class SmartChatConstant {
 
+
+    //https://www.apiopen.top/meituApi?page=0 美图api
+
     //几个代表页面的常量
     public static final int PAGE_ONE = 0;
     public static final int PAGE_TWO = 1;
