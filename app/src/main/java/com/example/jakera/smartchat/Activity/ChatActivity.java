@@ -88,6 +88,8 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
 
     private Conversation conversation;
 
+    private String receiver_text;
+
 
     private TextView tv_title_bar_center;
     private ImageView iv_title_bar_back;
@@ -318,7 +320,7 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
         }
     }
 
-    //不同的Event接收不用的实体对象
+    //不同的Event接收不用的实体对象,同时在线
     public void onEvent(MessageEvent event) {
         Message msg = event.getMessage();
         UserInfo freind = msg.getFromUser();
@@ -329,8 +331,26 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
             case text:
                 //处理文字消息
                 TextContent textContent = (TextContent) msg.getContent();
-                textContent.getText();
-                Log.i(TAG, username_receiver + ":" + textContent.getText());
+                receiver_text = textContent.getText();
+                if (username_receiver.equals(friendUsername)) {
+
+                    //这里添加同一消息，需要在同一个线程之中，否则会出现，接收到的消息，需要点一下才能够更新recyclerview的显示,不能够正常地显示
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            TextMessageEntry messageEntry = new TextMessageEntry();
+                            messageEntry.setPortrait(BitmapFactory.decodeResource(getResources(), R.drawable.robot_portrait));
+                            messageEntry.setContent(receiver_text);
+                            messageEntry.setViewType(TextMessageEntry.RECEIVEMESSAGE);
+                            datas.add(messageEntry);
+                            adapter.notifyDataSetChanged();
+                            recyclerView.scrollToPosition(datas.size() - 1);
+                        }
+                    });
+
+                }
+                //textContent.getText();
+                //Log.i(TAG, username_receiver + ":" + textContent.getText());
                 break;
             case image:
                 //处理图片消息
@@ -373,41 +393,41 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
     }
 
 
-    /**
-     * 类似MessageEvent事件的接收，上层在需要的地方增加OfflineMessageEvent事件的接收
-     * 即可实现离线消息的接收。
-     **/
-    public void onEvent(OfflineMessageEvent event) {
-        //获取事件发生的会话对象
-        Log.i(TAG, "收到消息");
-        Conversation conversation = event.getConversation();
-        List<Message> newMessageList = event.getOfflineMessageList();//获取此次离线期间会话收到的新消息列表
-        System.out.println(String.format(Locale.SIMPLIFIED_CHINESE, "收到%d条来自%s的离线消息。\n", newMessageList.size(), conversation.getTargetId()));
-        for (int i = 0; i < newMessageList.size(); i++) {
-            //  {"text":"你好","extras":{}}
-//            Log.i(TAG,"i="+i+","+newMessageList.get(i).getContent().toJson());
-//            Log.i(TAG,"i="+i+","+newMessageList.get(i).getContent().);
-
-        }
-
-
-    }
-
-
-    /**
-     * 如果在JMessageClient.init时启用了消息漫游功能，则每当一个会话的漫游消息同步完成时
-     * sdk会发送此事件通知上层。
-     **/
-    public void onEvent(ConversationRefreshEvent event) {
-        Log.i(TAG, "收到消息");
-        //获取事件发生的会话对象
-        Conversation conversation = event.getConversation();
-        //获取事件发生的原因，对于漫游完成触发的事件，此处的reason应该是
-        //MSG_ROAMING_COMPLETE
-        ConversationRefreshEvent.Reason reason = event.getReason();
-        System.out.println(String.format(Locale.SIMPLIFIED_CHINESE, "收到ConversationRefreshEvent事件,待刷新的会话是%s.\n", conversation.getTargetId()));
-        System.out.println("事件发生的原因 : " + reason);
-    }
+//    /**
+//     * 类似MessageEvent事件的接收，上层在需要的地方增加OfflineMessageEvent事件的接收
+//     * 即可实现离线消息的接收。
+//     **/
+//    public void onEvent(OfflineMessageEvent event) {
+//        //获取事件发生的会话对象
+//        Log.i(TAG, "收到消息");
+//        Conversation conversation = event.getConversation();
+//        List<Message> newMessageList = event.getOfflineMessageList();//获取此次离线期间会话收到的新消息列表
+//        System.out.println(String.format(Locale.SIMPLIFIED_CHINESE, "收到%d条来自%s的离线消息。\n", newMessageList.size(), conversation.getTargetId()));
+//        for (int i = 0; i < newMessageList.size(); i++) {
+//            //  {"text":"你好","extras":{}}
+////            Log.i(TAG,"i="+i+","+newMessageList.get(i).getContent().toJson());
+////            Log.i(TAG,"i="+i+","+newMessageList.get(i).getContent().);
+//
+//        }
+//
+//
+//    }
+//
+//
+//    /**
+//     * 如果在JMessageClient.init时启用了消息漫游功能，则每当一个会话的漫游消息同步完成时
+//     * sdk会发送此事件通知上层。
+//     **/
+//    public void onEvent(ConversationRefreshEvent event) {
+//        Log.i(TAG, "收到消息");
+//        //获取事件发生的会话对象
+//        Conversation conversation = event.getConversation();
+//        //获取事件发生的原因，对于漫游完成触发的事件，此处的reason应该是
+//        //MSG_ROAMING_COMPLETE
+//        ConversationRefreshEvent.Reason reason = event.getReason();
+//        System.out.println(String.format(Locale.SIMPLIFIED_CHINESE, "收到ConversationRefreshEvent事件,待刷新的会话是%s.\n", conversation.getTargetId()));
+//        System.out.println("事件发生的原因 : " + reason);
+//    }
 
 
     private void closeKeyboard() {

@@ -1,15 +1,20 @@
 package com.example.jakera.smartchat.Activity;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -27,6 +32,8 @@ import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.SmartChatConstant;
 import com.example.jakera.smartchat.Utils.SharePreferenceUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 import cn.jpush.im.android.api.JMessageClient;
@@ -59,6 +66,15 @@ public class ModifyPortraitActivity extends AppCompatActivity implements View.On
         getSupportActionBar().hide();
         setContentView(R.layout.acitivity_modify_portrait);
         initView();
+
+        Intent intent = getIntent();
+        String state = intent.getStringExtra("portrait");
+        if (state != null && state.equals("sucess")) {
+
+            //一开始报null对象，原来是imageview没有初始化.....
+            iv_modify_user_portrait.setImageURI(Uri.fromFile(new File(getCacheDir(), "user_portrait.jpg")));
+        }
+
     }
 
 
@@ -93,6 +109,7 @@ public class ModifyPortraitActivity extends AppCompatActivity implements View.On
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("image/*");
                 startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+                bottomDialog.dismiss();
                 break;
             case R.id.tv_bottom_bar_save_photo:
                 break;
@@ -116,29 +133,14 @@ public class ModifyPortraitActivity extends AppCompatActivity implements View.On
 
         //此处的用于判断接收的Activity是不是你想要的那个
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
-            try {
                 Uri originalUri = data.getData();        //获得图片的uri
+            //文件过大，不便传输,传输其uri即可
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("bitmapUri", originalUri);
 
-                bm = MediaStore.Images.Media.getBitmap(resolver, originalUri);        //显得到bitmap图片
-
-                iv_modify_user_portrait.setImageBitmap(bm);
-
-                //获取图片的路径：
-
-                String[] proj = {MediaStore.Images.Media.DATA};
-
-                //好像是android多媒体数据库的封装接口，具体的看Android文档
-                Cursor cursor = managedQuery(originalUri, proj, null, null, null);
-                //按我个人理解 这个是获得用户选择的图片的索引值
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                //将光标移至开头 ，这个很重要，不小心很容易引起越界
-                cursor.moveToFirst();
-                //最后根据索引值获取图片路径
-                String path = cursor.getString(column_index);
-
-            } catch (IOException e) {
-                Log.e(TAG, e.toString());
-            }
+            Intent intent = new Intent(ModifyPortraitActivity.this, CropPortraitAcitivity.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
         }
     }
 

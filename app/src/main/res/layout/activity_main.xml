@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.jakera.smartchat.Activity.MainActivity">
+    tools:context="com.example.jakera.smartchat.Activity.MainActivity"
+    android:background="#64e7e7e7">
 
     <include
         android:id="@+id/main_title_bar"
@@ -33,6 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="5dp"
+        android:background="#d0d4d1d1"
         android:orientation="horizontal">
         
         <RadioButton

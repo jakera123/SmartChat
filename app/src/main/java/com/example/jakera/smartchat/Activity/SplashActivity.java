@@ -30,7 +30,7 @@ public class SplashActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         tv_count_time = (TextView) findViewById(R.id.tv_count_time);
-        myCountDownTimer = new MyCountDownTimer(5000, 1000);
+        myCountDownTimer = new MyCountDownTimer(1000, 1000);
         myCountDownTimer.start();
         handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -46,7 +46,7 @@ public class SplashActivity extends AppCompatActivity {
                 SplashActivity.this.finish();
 
             }
-        }, 5000);
+        }, 1000);
 
 
     }
