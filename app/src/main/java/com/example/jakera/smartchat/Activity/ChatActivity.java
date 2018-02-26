@@ -2,6 +2,7 @@ package com.example.jakera.smartchat.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -40,6 +41,8 @@ import java.util.List;
 import java.util.Locale;
 
 import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.callback.GetAvatarBitmapCallback;
+import cn.jpush.im.android.api.callback.GetUserInfoCallback;
 import cn.jpush.im.android.api.content.CustomContent;
 import cn.jpush.im.android.api.content.EventNotificationContent;
 import cn.jpush.im.android.api.content.ImageContent;
@@ -49,6 +52,7 @@ import cn.jpush.im.android.api.content.VoiceContent;
 import cn.jpush.im.android.api.event.ConversationRefreshEvent;
 import cn.jpush.im.android.api.event.MessageEvent;
 import cn.jpush.im.android.api.event.OfflineMessageEvent;
+import cn.jpush.im.android.api.exceptions.JMFileSizeExceedException;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.Message;
 import cn.jpush.im.android.api.model.UserInfo;
@@ -85,6 +89,8 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
     private boolean isChinese = true;
 
     private String friendUsername;
+    private UserInfo friendUserInfo;
+    private Bitmap frindPortrait;
 
     private Conversation conversation;
 
@@ -147,8 +153,14 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
         tv_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextMessageEntry messageEntry=new TextMessageEntry();
-                messageEntry.setPortrait(BitmapFactory.decodeResource(getResources(),R.mipmap.icon));
+                final TextMessageEntry messageEntry = new TextMessageEntry();
+                JMessageClient.getMyInfo().getAvatarBitmap(new GetAvatarBitmapCallback() {
+                    @Override
+                    public void gotResult(int i, String s, Bitmap bitmap) {
+                        messageEntry.setPortrait(bitmap);
+                    }
+                });
+                // messageEntry.setPortrait(BitmapFactory.decodeResource(getResources(),R.mipmap.icon));
                 messageEntry.setContent(et_input_text.getText().toString());
                 if (friendUsername.equals(getString(R.string.app_name))) {
                     okhttpHelper.postToTuLingRobot(et_input_text.getText().toString(), "123456");
@@ -234,6 +246,20 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+
+
+        JMessageClient.getUserInfo(friendUsername, new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int i, String s, UserInfo userInfo) {
+                friendUserInfo = userInfo;
+                userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
+                    @Override
+                    public void gotResult(int i, String s, Bitmap bitmap) {
+                        frindPortrait = bitmap;
+                    }
+                });
             }
         });
 
@@ -339,7 +365,8 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
                         @Override
                         public void run() {
                             TextMessageEntry messageEntry = new TextMessageEntry();
-                            messageEntry.setPortrait(BitmapFactory.decodeResource(getResources(), R.drawable.robot_portrait));
+
+                            messageEntry.setPortrait(frindPortrait);
                             messageEntry.setContent(receiver_text);
                             messageEntry.setViewType(TextMessageEntry.RECEIVEMESSAGE);
                             datas.add(messageEntry);

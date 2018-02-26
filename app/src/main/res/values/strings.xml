@@ -63,4 +63,6 @@
 
     <string name="accept">接收</string>
     <string name="reject">拒绝</string>
+
+    <string name="modify_portrait_success">恭喜你，修改头像成功</string>
 </resources>

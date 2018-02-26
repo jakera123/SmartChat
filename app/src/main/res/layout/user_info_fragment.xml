@@ -16,7 +16,7 @@
         android:background="@mipmap/sunset">
 
         <com.example.jakera.smartchat.Views.CircleImageView
-            android:id="@+id/iv_user_portrait"
+            android:id="@+id/civ_user_portrait"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:src="@drawable/robot_portrait"
@@ -33,7 +33,7 @@
             android:textColor="#d4f4f0f0"
             android:textSize="18sp"
             android:layout_marginTop="5dp"
-            android:layout_below="@+id/iv_user_portrait"
+            android:layout_below="@+id/civ_user_portrait"
             android:layout_centerHorizontal="true" />
 
         <ImageView

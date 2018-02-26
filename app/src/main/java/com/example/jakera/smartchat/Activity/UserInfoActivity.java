@@ -28,7 +28,7 @@ import cn.jpush.im.android.api.callback.GetAvatarBitmapCallback;
 public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
     private Button btn_exit_login;
     private TextView tv_title_bar_center;
-    private ImageView iv_user_info_back;
+    private ImageView iv_user_info_back, iv_user_info_portrait;
     private RelativeLayout relate_userinfo_portrait;
 
     @Override
@@ -58,6 +58,13 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         iv_user_info_back.setOnClickListener(this);
         relate_userinfo_portrait = (RelativeLayout) findViewById(R.id.relate_userinfo_portrait);
         relate_userinfo_portrait.setOnClickListener(this);
+        iv_user_info_portrait = (ImageView) findViewById(R.id.iv_user_info_portrait);
+        JMessageClient.getMyInfo().getAvatarBitmap(new GetAvatarBitmapCallback() {
+            @Override
+            public void gotResult(int i, String s, Bitmap bitmap) {
+                iv_user_info_portrait.setImageBitmap(bitmap);
+            }
+        });
     }
 
 

@@ -1,6 +1,7 @@
 package com.example.jakera.smartchat.Fragment;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,8 +16,10 @@ import android.widget.Toast;
 import com.example.jakera.smartchat.Activity.MainActivity;
 import com.example.jakera.smartchat.Activity.UserInfoActivity;
 import com.example.jakera.smartchat.R;
+import com.example.jakera.smartchat.Views.CircleImageView;
 
 import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.callback.GetAvatarBitmapCallback;
 import cn.jpush.im.android.api.model.UserInfo;
 
 /**
@@ -26,6 +29,7 @@ import cn.jpush.im.android.api.model.UserInfo;
 public class UserInfoFragment extends Fragment implements View.OnClickListener {
     private ImageView iv_modify_user_info;
     private TextView tv_userinfo_username;
+    private CircleImageView civ_user_portrait;
     private String TAG = "UserInfoFragment";
     private View layout;
     private UserInfo userInfo;
@@ -46,6 +50,7 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
         iv_modify_user_info = (ImageView) layout.findViewById(R.id.iv_modify_user_info);
         iv_modify_user_info.setOnClickListener(this);
         tv_userinfo_username = (TextView) layout.findViewById(R.id.tv_userinfo_username);
+        civ_user_portrait = (CircleImageView) layout.findViewById(R.id.civ_user_portrait);
         loadUserInfo = new LoadUserInfo();
         loadUserInfo.start();
 //        if (userInfo!=null){
@@ -92,6 +97,13 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void run() {
                         tv_userinfo_username.setText(userInfo.getUserName());
+                        userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
+                            @Override
+                            public void gotResult(int i, String s, Bitmap bitmap) {
+                                civ_user_portrait.setImageBitmap(bitmap);
+                            }
+                        });
+
                     }
                 });
             }

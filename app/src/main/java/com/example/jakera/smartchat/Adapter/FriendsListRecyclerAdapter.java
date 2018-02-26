@@ -42,9 +42,15 @@ public class FriendsListRecyclerAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        FriendsViewHolder friendsViewHolder = (FriendsViewHolder) holder;
+        final FriendsViewHolder friendsViewHolder = (FriendsViewHolder) holder;
         UserInfo userInfo = datas.get(position);
 //        TODO:更改头像
+        userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
+            @Override
+            public void gotResult(int i, String s, Bitmap bitmap) {
+                friendsViewHolder.iv_portrait.setImageBitmap(bitmap);
+            }
+        });
         friendsViewHolder.iv_portrait.setTag(position);
         friendsViewHolder.tv_username.setText(userInfo.getUserName());
     }

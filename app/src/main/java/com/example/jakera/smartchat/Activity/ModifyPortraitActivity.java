@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.SmartChatConstant;
@@ -38,6 +39,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.callback.GetAvatarBitmapCallback;
+import cn.jpush.im.api.BasicCallback;
 
 /**
  * Created by jakera on 18-2-9.
@@ -83,6 +86,14 @@ public class ModifyPortraitActivity extends AppCompatActivity implements View.On
 
             //一开始报null对象，原来是imageview没有初始化.....
             iv_modify_user_portrait.setImageURI(Uri.fromFile(new File(getCacheDir(), "user_portrait.jpg")));
+            JMessageClient.updateUserAvatar(new File(getCacheDir(), "user_portrait.jpg"), new BasicCallback() {
+                @Override
+                public void gotResult(int i, String s) {
+                    if (i == 0) {
+                        Toast.makeText(ModifyPortraitActivity.this, getString(R.string.modify_portrait_success), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
 
     }
@@ -98,7 +109,12 @@ public class ModifyPortraitActivity extends AppCompatActivity implements View.On
         iv_title_bar_more.setVisibility(View.VISIBLE);
         iv_title_bar_more.setOnClickListener(this);
         iv_modify_user_portrait = (ImageView) findViewById(R.id.iv_modify_user_portrait);
-
+        JMessageClient.getMyInfo().getAvatarBitmap(new GetAvatarBitmapCallback() {
+            @Override
+            public void gotResult(int i, String s, Bitmap bitmap) {
+                iv_modify_user_portrait.setImageBitmap(bitmap);
+            }
+        });
 
     }
 
@@ -116,7 +132,7 @@ public class ModifyPortraitActivity extends AppCompatActivity implements View.On
                 //记得注册调用摄像头权限，打log可以看出原因
                 //运行时权限
                 startActivityForResult(intent1, REQUEST_IMAGE_CAMERA);
-
+                bottomDialog.dismiss();
                 break;
             case R.id.tv_bottom_bar_select_gallery:
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -189,7 +205,10 @@ public class ModifyPortraitActivity extends AppCompatActivity implements View.On
 
 
             }
+
         }
+        //防止创建过多的Activity
+        finish();
 
     }
 

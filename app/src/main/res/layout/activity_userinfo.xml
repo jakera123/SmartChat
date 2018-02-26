@@ -35,6 +35,7 @@
             android:textSize="20sp" />
 
         <ImageView
+            android:id="@+id/iv_user_info_portrait"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_centerVertical="true"
