@@ -35,6 +35,7 @@ import com.example.jakera.smartchat.Utils.SharePreferenceUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import cn.jpush.im.android.api.JMessageClient;
 
@@ -50,6 +51,7 @@ public class ModifyPortraitActivity extends AppCompatActivity implements View.On
     private Dialog bottomDialog;
     private String TAG = "ModifyPortraitActivity";
     private int REQUEST_IMAGE_CAPTURE = 1;
+    private int REQUEST_IMAGE_CAMERA = 2;
 
     private ImageView iv_modify_user_portrait;
 
@@ -66,6 +68,14 @@ public class ModifyPortraitActivity extends AppCompatActivity implements View.On
         getSupportActionBar().hide();
         setContentView(R.layout.acitivity_modify_portrait);
         initView();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    1);
+        }
+
+
 
         Intent intent = getIntent();
         String state = intent.getStringExtra("portrait");
@@ -102,6 +112,10 @@ public class ModifyPortraitActivity extends AppCompatActivity implements View.On
                 showBottonBar();
                 break;
             case R.id.tv_bottom_bar_take_photo:
+                Intent intent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                //记得注册调用摄像头权限，打log可以看出原因
+                //运行时权限
+                startActivityForResult(intent1, REQUEST_IMAGE_CAMERA);
 
                 break;
             case R.id.tv_bottom_bar_select_gallery:
@@ -133,7 +147,7 @@ public class ModifyPortraitActivity extends AppCompatActivity implements View.On
 
         //此处的用于判断接收的Activity是不是你想要的那个
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
-                Uri originalUri = data.getData();        //获得图片的uri
+            Uri originalUri = data.getData();        //获得图片的uri
             //文件过大，不便传输,传输其uri即可
             Bundle bundle = new Bundle();
             bundle.putParcelable("bitmapUri", originalUri);
@@ -141,7 +155,42 @@ public class ModifyPortraitActivity extends AppCompatActivity implements View.On
             Intent intent = new Intent(ModifyPortraitActivity.this, CropPortraitAcitivity.class);
             intent.putExtras(bundle);
             startActivity(intent);
+        } else if (requestCode == REQUEST_IMAGE_CAMERA) {
+            //从相册获取uri
+            Bundle bundle = data.getExtras();
+            Bitmap bitmap = (Bitmap) bundle.get("data");
+            //将获取的图片暂时保存起来
+            Uri mSaveUri = Uri.fromFile(new File(getCacheDir(), "user_portrait_temp.jpg"));
+            if (mSaveUri != null) {
+                OutputStream outputStream = null;
+                try {
+                    outputStream = getContentResolver().openOutputStream(mSaveUri);
+                    if (outputStream != null) {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                    }
+                } catch (IOException ex) {
+                    Log.e("android", "Cannot open file: " + mSaveUri, ex);
+                } finally {
+                    if (outputStream != null) {
+                        try {
+                            outputStream.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                //文件过大，不便传输,传输其uri即可
+                Bundle bundle1 = new Bundle();
+                bundle.putParcelable("bitmapUri", mSaveUri);
+
+                Intent intent = new Intent(ModifyPortraitActivity.this, CropPortraitAcitivity.class);
+                intent.putExtras(bundle1);
+                startActivity(intent);
+
+
+            }
         }
+
     }
 
 

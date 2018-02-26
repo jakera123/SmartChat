@@ -81,14 +81,11 @@ public class CropPortraitAcitivity extends AppCompatActivity {
             //Bitmap过大，不能用Bundle进行传输，故使用Uri来代替
             Bundle bundle = intent.getExtras();
             Uri bmpUri = (Uri) bundle.getParcelable("bitmapUri");
-            clipViewLayout.setImageSrc(bmpUri);
-            Bitmap bmp = null;
-            try {
-                bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), bmpUri);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (bmpUri == null) {
+                //由于保存图片需要时间，所以，直接在新的Activity里进行读取
+                bmpUri = Uri.fromFile(new File(getCacheDir(), "user_portrait_temp.jpg"));
             }
-            //          iv_crop_portrait.setImageBitmap(bmp);
+            clipViewLayout.setImageSrc(bmpUri);
         }
 
     }

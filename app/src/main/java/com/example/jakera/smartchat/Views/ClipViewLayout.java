@@ -139,6 +139,7 @@ public class ClipViewLayout extends RelativeLayout {
      */
     public void initSrcPic(Uri uri) {
         if (uri == null) {
+            Log.i("evan", "Uri is null");
             return;
         }
         Log.d("evan", "**********clip_view uri*******  " + uri);
