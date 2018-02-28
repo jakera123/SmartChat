@@ -37,8 +37,12 @@ public class WatchMoreRecyclerAdapter extends RecyclerView.Adapter {
 
     private List<BeautifulPictureEntry.Data> datas = new ArrayList<>();
 
-    public void setDatas(List<BeautifulPictureEntry.Data> datas) {
-        this.datas = datas;
+    public void setDatas(List<BeautifulPictureEntry.Data> datas, boolean isRefresh) {
+        if (isRefresh) {
+            this.datas = datas;
+        } else {
+            this.datas.addAll(datas);
+        }
         this.notifyDataSetChanged();
     }
 

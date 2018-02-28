@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.example.jakera.smartchat.Activity.MainActivity;
 import com.example.jakera.smartchat.Adapter.WatchMoreRecyclerAdapter;
 import com.example.jakera.smartchat.Entry.BeautifulPictureEntry;
+import com.example.jakera.smartchat.Interface.EndLessOnScrollListener;
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.Utils.OkhttpHelper;
 import com.google.gson.Gson;
@@ -32,12 +33,16 @@ public class WatchMoreFragment extends Fragment implements Callback {
 
     private RecyclerView recyclerview_watch_more;
     private WatchMoreRecyclerAdapter watchMoreRecyclerAdapter;
+    private StaggeredGridLayoutManager staggeredGridLayoutManager;
 
     private OkhttpHelper okhttpHelper;
+
 
     private BeautifulPictureEntry datas;
 
     private SwipeRefreshLayout swipe_refresh_layout;
+
+    private boolean isRefresh = false;
 
     private String TAG = "WatchMoreFragment";
 
@@ -49,7 +54,8 @@ public class WatchMoreFragment extends Fragment implements Callback {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.watch_more_fragment,container,false);
         recyclerview_watch_more = (RecyclerView) view.findViewById(R.id.recyclerview_watch_more);
-        recyclerview_watch_more.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recyclerview_watch_more.setLayoutManager(staggeredGridLayoutManager);
         watchMoreRecyclerAdapter = new WatchMoreRecyclerAdapter();
         watchMoreRecyclerAdapter.setContext(getContext());
         recyclerview_watch_more.setAdapter(watchMoreRecyclerAdapter);
@@ -57,6 +63,14 @@ public class WatchMoreFragment extends Fragment implements Callback {
         swipe_refresh_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                isRefresh = true;
+                okhttpHelper.getByUrl("https://www.apiopen.top/meituApi?page=0");
+            }
+        });
+        recyclerview_watch_more.addOnScrollListener(new EndLessOnScrollListener(staggeredGridLayoutManager) {
+            @Override
+            public void onLoadMore() {
+                Log.i(TAG, "recycler is loading.......");
                 okhttpHelper.getByUrl("https://www.apiopen.top/meituApi?page=0");
             }
         });
@@ -85,8 +99,12 @@ public class WatchMoreFragment extends Fragment implements Callback {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                watchMoreRecyclerAdapter.setDatas(datas.data);
-                swipe_refresh_layout.setRefreshing(false);
+                watchMoreRecyclerAdapter.setDatas(datas.data, isRefresh);
+                if (isRefresh) {
+                    swipe_refresh_layout.setRefreshing(false);
+                    isRefresh = false;
+                }
+
             }
         });
     }
