@@ -3,6 +3,7 @@ package com.example.jakera.smartchat.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -36,6 +37,8 @@ public class WatchMoreFragment extends Fragment implements Callback {
 
     private BeautifulPictureEntry datas;
 
+    private SwipeRefreshLayout swipe_refresh_layout;
+
     private String TAG = "WatchMoreFragment";
 
     public WatchMoreFragment() {
@@ -50,6 +53,13 @@ public class WatchMoreFragment extends Fragment implements Callback {
         watchMoreRecyclerAdapter = new WatchMoreRecyclerAdapter();
         watchMoreRecyclerAdapter.setContext(getContext());
         recyclerview_watch_more.setAdapter(watchMoreRecyclerAdapter);
+        swipe_refresh_layout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+        swipe_refresh_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                okhttpHelper.getByUrl("https://www.apiopen.top/meituApi?page=0");
+            }
+        });
         init();
         return view;
     }
@@ -76,6 +86,7 @@ public class WatchMoreFragment extends Fragment implements Callback {
             @Override
             public void run() {
                 watchMoreRecyclerAdapter.setDatas(datas.data);
+                swipe_refresh_layout.setRefreshing(false);
             }
         });
     }
