@@ -41,8 +41,7 @@
     <string name="portrait">头像</string>
     <string name="nickname">昵称</string>
     <string name="age">年龄</string>
-    <string name="sex">姓别</string>
-    <string name="phone">手机</string>
+    <string name="signature">个性签名</string>
 
     <string name="login_now">正在登陆...</string>
     <string name="person_info">个人资料</string>
@@ -64,5 +63,12 @@
     <string name="accept">接收</string>
     <string name="reject">拒绝</string>
 
-    <string name="modify_portrait_success">恭喜你，修改头像成功</string>
+    <string name="modify_success">恭喜你，修改成功</string>
+
+    <string name="modify_nickname">修改昵称</string>
+    <string name="modify_signature">修改性别</string>
+
+    <string name="myQR">我的二维码</string>
+
+
 </resources>

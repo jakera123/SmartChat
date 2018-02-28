@@ -28,7 +28,7 @@ import cn.jpush.im.android.api.model.UserInfo;
 
 public class UserInfoFragment extends Fragment implements View.OnClickListener {
     private ImageView iv_modify_user_info;
-    private TextView tv_userinfo_username;
+    private TextView tv_userinfo_username, tv_fregment_userinfo_signature;
     private CircleImageView civ_user_portrait;
     private String TAG = "UserInfoFragment";
     private View layout;
@@ -53,6 +53,7 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
         civ_user_portrait = (CircleImageView) layout.findViewById(R.id.civ_user_portrait);
         loadUserInfo = new LoadUserInfo();
         loadUserInfo.start();
+        tv_fregment_userinfo_signature = (TextView) layout.findViewById(R.id.tv_fregment_userinfo_signature);
 //        if (userInfo!=null){
 //            tv_userinfo_username.setText(userInfo.getUserName());
 //        }
@@ -96,13 +97,14 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tv_userinfo_username.setText(userInfo.getUserName());
+                        tv_userinfo_username.setText(userInfo.getNickname());
                         userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
                             @Override
                             public void gotResult(int i, String s, Bitmap bitmap) {
                                 civ_user_portrait.setImageBitmap(bitmap);
                             }
                         });
+                        tv_fregment_userinfo_signature.setText(userInfo.getSignature());
 
                     }
                 });

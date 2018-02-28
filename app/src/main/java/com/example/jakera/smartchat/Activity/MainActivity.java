@@ -6,10 +6,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -27,16 +23,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jakera.smartchat.Fragment.FriendsListFragment;
-import com.example.jakera.smartchat.Fragment.MessageListFragment;
 import com.example.jakera.smartchat.Fragment.SmartChatFragmentAdapter;
-import com.example.jakera.smartchat.Fragment.UserInfoFragment;
-import com.example.jakera.smartchat.Fragment.WatchMoreFragment;
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.SmartChatConstant;
-import com.example.jakera.smartchat.Utils.AudioRecorderUtil;
 import com.example.jakera.smartchat.Utils.RecognizerHelper;
-import com.example.jakera.smartchat.Utils.SpeechSynthesizerUtil;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechRecognizer;
@@ -302,8 +292,8 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                 iv_title_bar_more.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        View view = getLayoutInflater().inflate(R.layout.dialog_add_friends, null);
-                        final EditText editText = (EditText) view.findViewById(R.id.et_dialog_add_friends);
+                        View view = getLayoutInflater().inflate(R.layout.dialog_item_edittext, null);
+                        final EditText editText = (EditText) view.findViewById(R.id.et_dialog);
                         AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
                                 .setIcon(R.mipmap.icon)//设置标题的图片
                                 .setTitle(getResources().getString(R.string.add_friends))//设置对话框的标题

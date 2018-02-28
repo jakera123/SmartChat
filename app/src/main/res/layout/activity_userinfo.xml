@@ -59,6 +59,7 @@
         android:background="#8f07010d" />
 
     <RelativeLayout
+        android:id="@+id/relate_userinfo_nickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#d6ffffff">
@@ -73,6 +74,7 @@
             android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/tv_userinfo_nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -101,42 +103,44 @@
         android:background="#8f07010d" />
 
     <RelativeLayout
+        android:id="@+id/relate_userinfo_signature"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#d6ffffff">
 
         <TextView
+            android:id="@+id/tv_below_signature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sex"
-            android:paddingVertical="10dp"
+            android:text="@string/signature"
+            android:paddingVertical="15dp"
             android:paddingHorizontal="20dp"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
+
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_userinfo_signature"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:text="@string/app_name"
+            android:layout_below="@id/tv_below_signature"
             android:layout_centerVertical="true"
-            android:layout_marginRight="30dp"
-            android:textSize="17dp"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="15dp"
+            android:textSize="18sp" />
 
-            />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@mipmap/foreward"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true" />
     </RelativeLayout>
-
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#8f07010d" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#8f07010d"
+        android:layout_marginTop="20dp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -146,64 +150,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/age"
-            android:paddingVertical="10dp"
+            android:text="@string/myQR"
             android:paddingHorizontal="20dp"
             android:textColor="@color/black"
+            android:layout_centerVertical="true"
             android:textSize="20sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="@string/app_name"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="30dp"
-            android:textSize="17dp" />
-
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@mipmap/foreward"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/robot_portrait"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true" />
-    </RelativeLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#8f07010d" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#d6ffffff">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/phone"
-            android:paddingVertical="10dp"
-            android:paddingHorizontal="20dp"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="@string/app_name"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="30dp"
-            android:textSize="17dp"
-
-            />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@mipmap/foreward"
-            android:layout_alignParentRight="true"
+            android:layout_margin="5dp"
             android:layout_centerVertical="true" />
     </RelativeLayout>
 

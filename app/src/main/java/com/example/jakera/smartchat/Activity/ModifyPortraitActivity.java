@@ -90,7 +90,7 @@ public class ModifyPortraitActivity extends AppCompatActivity implements View.On
                 @Override
                 public void gotResult(int i, String s) {
                     if (i == 0) {
-                        Toast.makeText(ModifyPortraitActivity.this, getString(R.string.modify_portrait_success), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ModifyPortraitActivity.this, getString(R.string.modify_success), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
