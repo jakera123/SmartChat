@@ -19,6 +19,8 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -35,6 +37,7 @@ public class RecognizerHelper {
     private SpeechRecognizer mSpeechRecognizer;
     private RecognizerDialog mRecognizerDialog;
     private RecognizerDialogListener mRListener;
+    private AudioDecode audioDecode;
 
     private String TAG="RecognizerHelper";
 
@@ -139,8 +142,53 @@ public class RecognizerHelper {
 
     }
 
+    //参考科大迅飞Demo   https://github.com/leoleohan/Voice2Txt
+    public void recognizerFromArm(String path) {
 
-    public void recognizeStreamFromPath(String filePath) {
+        try {
+
+            mSpeechRecognizer.setParameter(SpeechConstant.AUDIO_SOURCE, "-1");
+            //记得在录制时也要设置好采样率
+            mSpeechRecognizer.setParameter(SpeechConstant.SAMPLE_RATE, "8000");
+            mSpeechRecognizer.setParameter(SpeechConstant.ASR_AUDIO_PATH, path);
+
+            audioDecode = AudioDecode.newInstance();
+
+            File file = new File(path);
+            Log.i(TAG, path);
+            if (file.exists()) {
+                Log.i(TAG, "file exists.");
+            } else {
+                Log.w(TAG, "file not exists!!!");
+                return;
+            }
+
+            audioDecode.prepare(path);
+            audioDecode.setOnCompleteListener(new AudioDecode.OnCompleteListener() {
+                @Override
+                public void completed(final ArrayList<byte[]> pcmData) {
+                    re_number = mSpeechRecognizer.startListening(mRecognizerListener);
+                    if (re_number != ErrorCode.SUCCESS) {
+                        Log.i(TAG, "fail to recognizer.....");
+                    } else {
+                        Log.i(TAG, "recognizer......");
+                        for (byte[] data : pcmData) {
+                            final ArrayList<byte[]> buffers = RecognizerUtil.splitBuffer(data, data.length, 4800);
+                            for (byte[] buffer : buffers) {
+                                Log.i(TAG, "正在转码");
+                                mSpeechRecognizer.writeAudio(buffer, 0, buffer.length);
+                            }
+                        }
+                        mSpeechRecognizer.stopListening();
+                    }
+                    audioDecode.release();
+                }
+            });
+            audioDecode.startAsync();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }

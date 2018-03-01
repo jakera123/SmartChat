@@ -80,6 +80,8 @@ public class AudioManager {
             mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             //设置音频的格式
             mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.RAW_AMR);
+            //设置采样率
+            mMediaRecorder.setAudioSamplingRate(8000);
             //设置音频的编码为amr
             mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             mMediaRecorder.prepare();
@@ -106,7 +108,8 @@ public class AudioManager {
      */
     private String generateFileName() {
         // TODO Auto-generated method stub
-        return UUID.randomUUID().toString()+".amr";
+        // return UUID.randomUUID().toString()+".amr";
+        return "123.amr";
     }
 
 

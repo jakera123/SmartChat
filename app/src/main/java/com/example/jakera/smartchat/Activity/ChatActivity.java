@@ -31,10 +31,12 @@ import com.example.jakera.smartchat.Utils.OkhttpHelper;
 import com.example.jakera.smartchat.Utils.SpeechSynthesizerUtil;
 import com.example.jakera.smartchat.Utils.TranslateUtil;
 import com.example.jakera.smartchat.Views.AudioRecorderButton;
+import com.iflytek.cloud.SpeechConstant;
 import com.youdao.sdk.ydtranslate.Translate;
 import com.youdao.sdk.ydtranslate.TranslateErrorCode;
 import com.youdao.sdk.ydtranslate.TranslateListener;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
