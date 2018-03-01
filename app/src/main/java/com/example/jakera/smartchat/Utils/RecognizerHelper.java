@@ -45,6 +45,8 @@ public class RecognizerHelper {
 
     private Context context;
 
+    private MyRecognizerListener myRecognizerListener;
+
 
     public RecognizerHelper(Context context,SpeechRecognizer speechRecognizer,RecognizerDialog recognizerDialog) {
         this.context=context;
@@ -52,11 +54,22 @@ public class RecognizerHelper {
         this.mRecognizerDialog=recognizerDialog;
     }
 
+    public RecognizerHelper(SpeechRecognizer speechRecognizer) {
+        this.mSpeechRecognizer = speechRecognizer;
+        myRecognizerListener = new MyRecognizerListener();
+    }
+
     public void setListener(RecognizerDialogListener listener){
         this.mRecognizerDialog.setListener(listener);
     }
 
+    public void setVoiceToTextListener(getVoiceToTextResult listener) {
+        this.myRecognizerListener.setListener(listener);
+    }
 
+    public interface getVoiceToTextResult {
+        void getRecognizeResult(String result);
+    }
 
     public void startSpeechRecognizer(){
         setIatParam();
@@ -91,13 +104,17 @@ public class RecognizerHelper {
         mRecognizerDialog.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageState()+"/smart_chat_recorder_audios/"+generateFileName()+".wav");
     }
 
-
+    /**
+     * {"sn":1,"ls":false,"bg":0,"ed":0,"ws":[{"bg":0,"cw":[{"sc":0.00,"w":"今天"}]},{"bg":0,"cw":[{"sc":0.00,"w":"天气"}]},{"bg":0,"cw":[{"sc":0.00,"w":"好"}]},{"bg":0,"cw":[{"sc":0.00,"w":"吗"}]}]}
+     *
+     * @param json
+     * @return
+     */
     public static String parseIatResult(String json){
         StringBuffer ret=new StringBuffer();
         try {
             JSONTokener tokener = new JSONTokener(json);
             JSONObject joResult = new JSONObject(tokener);
-
             JSONArray words = joResult.getJSONArray("ws");
             for (int i = 0; i < words.length(); i++) {
                 // 转写结果词，默认使用第一个结果
@@ -118,7 +135,7 @@ public class RecognizerHelper {
 
     public void recognizeStream(String filename){
         mSpeechRecognizer.setParameter(SpeechConstant.AUDIO_SOURCE, "-1");
-        re_number=mSpeechRecognizer.startListening(mRecognizerListener);
+        re_number = mSpeechRecognizer.startListening(myRecognizerListener);
         if (re_number!= ErrorCode.SUCCESS){
             Log.i(TAG,"fail to recognizer.....");
         }else {
@@ -143,7 +160,7 @@ public class RecognizerHelper {
     }
 
     //参考科大迅飞Demo   https://github.com/leoleohan/Voice2Txt
-    public void recognizerFromArm(String path) {
+    public void recognizerFromAmr(String path) {
 
         try {
 
@@ -167,7 +184,7 @@ public class RecognizerHelper {
             audioDecode.setOnCompleteListener(new AudioDecode.OnCompleteListener() {
                 @Override
                 public void completed(final ArrayList<byte[]> pcmData) {
-                    re_number = mSpeechRecognizer.startListening(mRecognizerListener);
+                    re_number = mSpeechRecognizer.startListening(myRecognizerListener);
                     if (re_number != ErrorCode.SUCCESS) {
                         Log.i(TAG, "fail to recognizer.....");
                     } else {
@@ -195,11 +212,16 @@ public class RecognizerHelper {
 
 
 
-
     /**
      * 听写监听器
      */
-    private RecognizerListener mRecognizerListener=new RecognizerListener() {
+    private class MyRecognizerListener implements RecognizerListener {
+
+        private getVoiceToTextResult listener;
+
+        public void setListener(getVoiceToTextResult listener) {
+            this.listener = listener;
+        }
         @Override
         public void onVolumeChanged(int i, byte[] bytes) {
             Log.i(TAG,"you are talking now,and the  volume is:"+i);
@@ -217,7 +239,8 @@ public class RecognizerHelper {
 
         @Override
         public void onResult(RecognizerResult recognizerResult, boolean b) {
-            Log.i(TAG,recognizerResult.getResultString());
+            String result = parseIatResult(recognizerResult.getResultString());
+            listener.getRecognizeResult(result);
         }
 
         @Override

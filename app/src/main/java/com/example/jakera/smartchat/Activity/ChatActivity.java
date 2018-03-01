@@ -28,10 +28,16 @@ import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.Utils.MediaManager;
 import com.example.jakera.smartchat.Utils.OkhttpHelper;
+import com.example.jakera.smartchat.Utils.RecognizerHelper;
 import com.example.jakera.smartchat.Utils.SpeechSynthesizerUtil;
 import com.example.jakera.smartchat.Utils.TranslateUtil;
 import com.example.jakera.smartchat.Views.AudioRecorderButton;
+import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechError;
+import com.iflytek.cloud.SpeechRecognizer;
+import com.iflytek.cloud.ui.RecognizerDialog;
+import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.youdao.sdk.ydtranslate.Translate;
 import com.youdao.sdk.ydtranslate.TranslateErrorCode;
 import com.youdao.sdk.ydtranslate.TranslateListener;
@@ -69,7 +75,7 @@ import okhttp3.Response;
  * Created by jakera on 18-2-1.
  */
 
-public class ChatActivity extends AppCompatActivity implements Callback,ItemClickListener{
+public class ChatActivity extends AppCompatActivity implements Callback, ItemClickListener, RecognizerHelper.getVoiceToTextResult {
 
     private String TAG="ChatActivity";
 
@@ -101,6 +107,11 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
 
     private TextView tv_title_bar_center;
     private ImageView iv_title_bar_back;
+
+    private RecognizerHelper recognizerHelper;
+    private SpeechRecognizer speechRecognizer;
+
+    private int clickPosition;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -264,7 +275,9 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
                 });
             }
         });
-
+        speechRecognizer = SpeechRecognizer.createRecognizer(this, null);
+        recognizerHelper = new RecognizerHelper(speechRecognizer);
+        recognizerHelper.setVoiceToTextListener(this);
     }
 
     @Override
@@ -314,6 +327,9 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
     public void OnItemClick(View v, final int position) {
         if(datas.get(position) instanceof VoiceMessageEntry){
             MediaManager.playSound(((VoiceMessageEntry) datas.get(position)).getFilePath(),null);
+            recognizerHelper.recognizerFromAmr(((VoiceMessageEntry) datas.get(position)).getFilePath());
+            clickPosition = position;
+
         } else if (datas.get(position) instanceof TextMessageEntry) {
             String fromLanguage, toLanguage;
             if (isChinese) {
@@ -465,5 +481,20 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    @Override
+    public void getRecognizeResult(String result) {
+        if (result.length() <= 1) {
+            return;
+        }
+        VoiceMessageEntry entry = (VoiceMessageEntry) datas.get(clickPosition);
+        final TextMessageEntry messageEntry = new TextMessageEntry();
+        messageEntry.setPortrait(entry.getPortrait());
+        messageEntry.setContent(result);
+        messageEntry.setViewType(entry.getViewType());
+        datas.add(clickPosition + 1, messageEntry);
+        adapter.notifyDataSetChanged();
+        recyclerView.scrollToPosition(datas.size() - 1);
     }
 }
