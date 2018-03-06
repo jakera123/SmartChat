@@ -108,8 +108,8 @@ public class AudioManager {
      */
     private String generateFileName() {
         // TODO Auto-generated method stub
-        // return UUID.randomUUID().toString()+".amr";
-        return "123.amr";
+        return UUID.randomUUID().toString() + ".amr";
+        //return "123.amr";
     }
 
 

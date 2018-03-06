@@ -139,7 +139,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
             public void onFinish(float seconds, String filePath) {
                 VoiceMessageEntry voiceMessageEntry=new VoiceMessageEntry(seconds,filePath);
                 Log.i(TAG,filePath);
-                voiceMessageEntry.setPortrait(BitmapFactory.decodeResource(getResources(),R.mipmap.icon));
+                voiceMessageEntry.setUserName(JMessageClient.getMyInfo().getUserName());
                 voiceMessageEntry.setViewType(BaseMessageEntry.SENDMESSAGE);
                 datas.add(voiceMessageEntry);
                 adapter.notifyDataSetChanged();
@@ -157,7 +157,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
         okhttpHelper.setCallback(this);
 
         TextMessageEntry messageEntry0=new TextMessageEntry();
-        messageEntry0.setPortrait(BitmapFactory.decodeResource(getResources(),R.drawable.robot_portrait));
+        messageEntry0.setUserName(getString(R.string.app_name));
         messageEntry0.setContent("嗨，我是小智，来和我聊天吧！！！");
         messageEntry0.setViewType(TextMessageEntry.RECEIVEMESSAGE);
 
@@ -167,12 +167,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
             @Override
             public void onClick(View v) {
                 final TextMessageEntry messageEntry = new TextMessageEntry();
-                JMessageClient.getMyInfo().getAvatarBitmap(new GetAvatarBitmapCallback() {
-                    @Override
-                    public void gotResult(int i, String s, Bitmap bitmap) {
-                        messageEntry.setPortrait(bitmap);
-                    }
-                });
+                messageEntry.setUserName(JMessageClient.getMyInfo().getUserName());
                 // messageEntry.setPortrait(BitmapFactory.decodeResource(getResources(),R.mipmap.icon));
                 messageEntry.setContent(et_input_text.getText().toString());
                 if (friendUsername.equals(getString(R.string.app_name))) {
@@ -289,7 +284,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
     public void onResponse(Call call, Response response) throws IOException {
         String answer=response.body().string();
         TextMessageEntry messageEntry=new TextMessageEntry();
-        messageEntry.setPortrait(BitmapFactory.decodeResource(getResources(),R.drawable.robot_portrait));
+        messageEntry.setUserName(friendUsername);
         messageEntry.setContent(okhttpHelper.parseTuLingResult(answer));
         messageEntry.setViewType(TextMessageEntry.RECEIVEMESSAGE);
         datas.add(messageEntry);
@@ -384,7 +379,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
                         public void run() {
                             TextMessageEntry messageEntry = new TextMessageEntry();
 
-                            messageEntry.setPortrait(frindPortrait);
+                            messageEntry.setUserName(friendUsername);
                             messageEntry.setContent(receiver_text);
                             messageEntry.setViewType(TextMessageEntry.RECEIVEMESSAGE);
                             datas.add(messageEntry);
@@ -490,7 +485,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
         }
         VoiceMessageEntry entry = (VoiceMessageEntry) datas.get(clickPosition);
         final TextMessageEntry messageEntry = new TextMessageEntry();
-        messageEntry.setPortrait(entry.getPortrait());
+        messageEntry.setUserName(entry.getUserName());
         messageEntry.setContent(result);
         messageEntry.setViewType(entry.getViewType());
         datas.add(clickPosition + 1, messageEntry);
