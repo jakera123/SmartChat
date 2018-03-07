@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -43,6 +44,7 @@ import com.youdao.sdk.ydtranslate.TranslateErrorCode;
 import com.youdao.sdk.ydtranslate.TranslateListener;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +82,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
     private String TAG="ChatActivity";
 
     private RecyclerView recyclerView;
+    //防止在不同线程
     private List<BaseMessageEntry> datas;
     private ChatRecyclerViewAdapter adapter;
 
@@ -141,6 +144,21 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
                 Log.i(TAG,filePath);
                 voiceMessageEntry.setUserName(JMessageClient.getMyInfo().getUserName());
                 voiceMessageEntry.setViewType(BaseMessageEntry.SENDMESSAGE);
+                try {
+                    Message voiceMessage = JMessageClient.createSingleVoiceMessage(friendUsername, null, new File(filePath), (int) seconds);
+                    voiceMessage.setOnSendCompleteCallback(new BasicCallback() {
+                        @Override
+                        public void gotResult(int i, String s) {
+                            if (i == 0) {
+                                Log.i(TAG, "发送语音成功");
+                            }
+                        }
+                    });
+                    JMessageClient.sendMessage(voiceMessage);
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
                 datas.add(voiceMessageEntry);
                 adapter.notifyDataSetChanged();
                 recyclerView.scrollToPosition(datas.size()-1);
@@ -361,7 +379,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
 
     //不同的Event接收不用的实体对象,同时在线
     public void onEvent(MessageEvent event) {
-        Message msg = event.getMessage();
+        final Message msg = event.getMessage();
         UserInfo freind = msg.getFromUser();
         String username_receiver = freind.getUserName();
         Log.i(TAG, "onEvent:接到事件");
@@ -400,9 +418,23 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
                 break;
             case voice:
                 //处理语音消息
+//                voiceContent.getLocalPath();//语音文件本地地址
+//                voiceContent.getDuration();//语音文件时长
                 VoiceContent voiceContent = (VoiceContent) msg.getContent();
-                voiceContent.getLocalPath();//语音文件本地地址
-                voiceContent.getDuration();//语音文件时长
+                final VoiceMessageEntry voiceMessageEntry = new VoiceMessageEntry(voiceContent.getDuration(), voiceContent.getLocalPath());
+                Log.i(TAG, voiceContent.getLocalPath());
+                voiceMessageEntry.setUserName(friendUsername);
+                voiceMessageEntry.setViewType(BaseMessageEntry.RECEIVEMESSAGE);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+
+                        datas.add(voiceMessageEntry);
+                        adapter.notifyDataSetChanged();
+                        recyclerView.scrollToPosition(datas.size() - 1);
+                    }
+                });
                 break;
             case custom:
                 //处理自定义消息

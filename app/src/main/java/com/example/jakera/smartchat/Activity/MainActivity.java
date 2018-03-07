@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -195,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                     break;
                 case SmartChatConstant.PAGE_FOUR:
                     rb_foot_btn04.setChecked(true);
-                    rb_foot_btn04.setForegroundTintList(ColorStateList.valueOf(Color.YELLOW));
+                    rb_foot_btn04.setBackgroundTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_FOUR);
 //                    recognizerHelper.recognizeStream(Environment.getExternalStorageDirectory() + "/smart_chat_recorder_audios/yinfu.pcm");
                     setTitlebar(SmartChatConstant.PAGE_FOUR);
@@ -236,10 +237,14 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         for (int i=0;i<4;i++){
             RadioButton temp=radioButtons.get(i);
             if (i==index){
-                temp.setCompoundDrawableTintList(ColorStateList.valueOf(Color.BLUE));
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    temp.setCompoundDrawableTintList(ColorStateList.valueOf(Color.BLUE));
+                }
                 temp.setTextColor(Color.BLUE);
             }else {
-                temp.setCompoundDrawableTintList(ColorStateList.valueOf(Color.BLACK));
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    temp.setCompoundDrawableTintList(ColorStateList.valueOf(Color.BLACK));
+                }
                 temp.setTextColor(Color.BLACK);
             }
         }

@@ -74,6 +74,12 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
     class LoadUserInfo extends Thread {
         @Override
         public void run() {
@@ -97,7 +103,7 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tv_userinfo_username.setText(userInfo.getNickname());
+                        tv_userinfo_username.setText(userInfo.getUserName() + ":" + userInfo.getNickname());
                         userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
                             @Override
                             public void gotResult(int i, String s, Bitmap bitmap) {

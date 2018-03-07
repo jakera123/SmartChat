@@ -146,6 +146,7 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
                         }
                     });
 //                    tempHolder1.iv_portrait.setImageBitmap(tempMessage.getPortrait());
+                    tempLeftHolder.tv_recorder_time_left.setText((int) tempMessage.getTime() + "");
                     tempLeftHolder.iv_portrait.setTag(position);
                 }
         }
@@ -166,12 +167,14 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
         private ImageView iv_portrait;
         private BubbleTextView bubble_textview;
         private BubbleLinearLayout chat_left_bubble;
+        private TextView tv_recorder_time_left;
 
         public ChatMessageLeftViewHolder(View itemView) {
             super(itemView);
             iv_portrait=(ImageView)itemView.findViewById(R.id.iv_chat_left_portrait);
             bubble_textview=(BubbleTextView)itemView.findViewById(R.id.bubble_chat_tv_left);
             chat_left_bubble=(BubbleLinearLayout)itemView.findViewById(R.id.chat_left_bubble);
+            tv_recorder_time_left = (TextView) itemView.findViewById(R.id.id_recorder_time_left);
             //一定要记得加入这一句，才能成功实现监听
             itemView.setOnClickListener(this);
         }
