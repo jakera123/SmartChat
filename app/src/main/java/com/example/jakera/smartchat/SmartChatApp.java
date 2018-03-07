@@ -1,6 +1,7 @@
 package com.example.jakera.smartchat;
 
 import android.app.Application;
+import android.content.Intent;
 import android.util.Log;
 
 import com.example.jakera.smartchat.Activity.ChatActivity;
@@ -41,6 +42,10 @@ public class SmartChatApp extends Application {
                 //极光即时通信
                 JMessageClient.setDebugMode(true);
                 JMessageClient.init(SmartChatApp.this);
+
+                Intent intent = new Intent(SmartChatApp.this, SmartChatService.class);
+                startService(intent);
+
             }
         }).start();
 

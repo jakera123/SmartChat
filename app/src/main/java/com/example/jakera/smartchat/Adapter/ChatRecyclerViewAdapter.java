@@ -127,6 +127,7 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
                     // tempHolder1.iv_portrait.setImageBitmap(tempMessage.getPortrait());
                     tempLeftHolder.bubble_textview.setVisibility(View.VISIBLE);
                     tempLeftHolder.chat_left_bubble.setVisibility(View.GONE);
+                    tempLeftHolder.tv_recorder_time_left.setVisibility(View.GONE);
                     //为Item设置监听所用
                     tempLeftHolder.iv_portrait.setTag(position);
                     tempLeftHolder.bubble_textview.setText(tempMessage.getContent());
