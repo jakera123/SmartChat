@@ -2,6 +2,7 @@ package com.example.jakera.smartchat;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.util.Log;
 
 import com.example.jakera.smartchat.Activity.ChatActivity;
 import com.example.jakera.smartchat.Activity.MainActivity;
+import com.example.jakera.smartchat.Utils.MySQLiteOpenHelper;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.event.MessageEvent;
@@ -22,18 +24,21 @@ import cn.jpush.im.android.api.model.Message;
 public class SmartChatService extends Service {
 
     private String TAG = "SmartChatService";
+    private SmartChatBinder binder = new SmartChatBinder();
+    private MySQLiteOpenHelper mySQLiteOpenHelper;
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(TAG, "我的服务，onBind");
-        return null;
+        return binder;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "我的服务，onCreate");
+        mySQLiteOpenHelper = new MySQLiteOpenHelper(this);
         JMessageClient.registerEventReceiver(this);
     }
 
@@ -71,5 +76,13 @@ public class SmartChatService extends Service {
 //            startActivity(intent);
 //        }
     }
+
+    public class SmartChatBinder extends Binder {
+        SmartChatService getService() {
+            return SmartChatService.this;
+        }
+    }
+
+
 
 }
