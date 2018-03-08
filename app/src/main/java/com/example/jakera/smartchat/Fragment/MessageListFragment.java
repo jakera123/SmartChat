@@ -50,7 +50,6 @@ public class MessageListFragment extends Fragment implements ItemClickListener, 
 
     private ServiceConnection serviceConnection;
     private SmartChatService smartChatService;
-    private List<String> friendsMessge;
 
     public MessageListFragment() {
 
@@ -64,8 +63,8 @@ public class MessageListFragment extends Fragment implements ItemClickListener, 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         MessageEntry messageEntry0=new MessageEntry();
         datas=new ArrayList<>();
-        messageEntry0.setPortrait(BitmapFactory.decodeResource(getResources(),R.drawable.robot_portrait));
-        messageEntry0.setTitle("我叫小智");
+        messageEntry0.setUsername(getString(R.string.app_name));
+        messageEntry0.setNickname("我叫小智");
         messageEntry0.setContent("快来自言智语吧");
         messageEntry0.setTime("2018.3.9");
         datas.add(messageEntry0);
@@ -97,15 +96,42 @@ public class MessageListFragment extends Fragment implements ItemClickListener, 
         };
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (smartChatService != null && smartChatService.getMessageList().size() > 0) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //假如只是保留一项进行遍历，不知为何会导致结果不一致，
+                    datas.clear();
+                    MessageEntry messageEntry0 = new MessageEntry();
+                    messageEntry0.setUsername(getString(R.string.app_name));
+                    messageEntry0.setNickname("我叫小智");
+                    messageEntry0.setContent("快来自言智语吧");
+                    messageEntry0.setTime("2018.3.9");
+                    datas.add(messageEntry0);
+                    List<MessageEntry> getDatas = new ArrayList<>();
+                    getDatas = smartChatService.getMessageList();
+                    datas.addAll(getDatas);
+                    adapter.setDatas(datas);
+                    adapter.notifyDataSetChanged();
 
-
+                }
+            });
+        }
+    }
 
     @Override
     public void OnItemClick(View v, int position) {
         Intent intent=new Intent();
         intent.setClass(getContext(), ChatActivity.class);
         Bundle data = new Bundle();
-        data.putString("username", getString(R.string.app_name));
+        if (position == 0) {
+            data.putString("username", getString(R.string.app_name));
+        } else {
+            data.putString("username", datas.get(position).getUsername());
+        }
         intent.putExtra("username", data);
         startActivity(intent);
     }
@@ -124,30 +150,21 @@ public class MessageListFragment extends Fragment implements ItemClickListener, 
     }
 
     @Override
-    public void getMessageList(List<String> messageList) {
-        friendsMessge = messageList;
+    public void getMessageList(final List<MessageEntry> messageList) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 //假如只是保留一项进行遍历，不知为何会导致结果不一致，
                 datas.clear();
                 MessageEntry messageEntry0 = new MessageEntry();
-                messageEntry0.setPortrait(BitmapFactory.decodeResource(getResources(), R.drawable.robot_portrait));
-                messageEntry0.setTitle("我叫小智");
+                messageEntry0.setUsername(getString(R.string.app_name));
+                messageEntry0.setNickname("我叫小智");
                 messageEntry0.setContent("快来自言智语吧");
                 messageEntry0.setTime("2018.3.9");
                 datas.add(messageEntry0);
-                for (String username : friendsMessge) {
-                    MessageEntry messageEntry = new MessageEntry();
-                    messageEntry.setPortrait(BitmapFactory.decodeResource(getResources(), R.drawable.robot_portrait));
-                    messageEntry.setTitle(username);
-                    messageEntry.setContent("快来自言智语吧");
-                    messageEntry.setTime("2018.3.9");
-                    datas.add(messageEntry);
-                }
+                datas.addAll(messageList);
                 adapter.setDatas(datas);
                 adapter.notifyDataSetChanged();
-
             }
         });
 

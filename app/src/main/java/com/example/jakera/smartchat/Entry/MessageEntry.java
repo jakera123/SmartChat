@@ -9,18 +9,13 @@ import android.graphics.drawable.Drawable;
 
 public class MessageEntry {
 
-   private Bitmap portrait;
-   private String title;
+    private String username;
+    private String nickname;
    private String content;
    private String time;
 
-    public void setPortrait(Bitmap portrait) {
-        this.portrait = portrait;
-    }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+
 
     public void setContent(String content) {
         this.content = content;
@@ -30,13 +25,20 @@ public class MessageEntry {
         this.time = time;
     }
 
-    public Bitmap getPortrait() {
-
-        return portrait;
+    public String getUsername() {
+        return username;
     }
 
-    public String getTitle() {
-        return title;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getContent() {

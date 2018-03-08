@@ -1,24 +1,36 @@
 package com.example.jakera.smartchat;
 
+import android.app.AlertDialog;
 import android.app.Service;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.example.jakera.smartchat.Activity.ChatActivity;
 import com.example.jakera.smartchat.Activity.MainActivity;
+import com.example.jakera.smartchat.Entry.MessageEntry;
 import com.example.jakera.smartchat.Utils.MySQLiteOpenHelper;
+import com.example.jakera.smartchat.Utils.TimeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.jpush.im.android.api.ContactManager;
 import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.callback.GetUserInfoListCallback;
+import cn.jpush.im.android.api.content.TextContent;
+import cn.jpush.im.android.api.content.VoiceContent;
+import cn.jpush.im.android.api.event.ContactNotifyEvent;
 import cn.jpush.im.android.api.event.MessageEvent;
 import cn.jpush.im.android.api.event.NotificationClickEvent;
 import cn.jpush.im.android.api.model.Message;
+import cn.jpush.im.android.api.model.UserInfo;
+import cn.jpush.im.api.BasicCallback;
 
 /**
  * Created by jakera on 18-3-7.
@@ -29,7 +41,7 @@ public class SmartChatService extends Service {
     private String TAG = "SmartChatService";
     private SmartChatBinder binder = new SmartChatBinder();
     private MySQLiteOpenHelper mySQLiteOpenHelper;
-    private List<String> messageList;
+    private List<MessageEntry> messageList = new ArrayList<>();
     private getMessageListener getMessage;
 
     public void setGetMessageListenr(getMessageListener listenr) {
@@ -48,7 +60,6 @@ public class SmartChatService extends Service {
         super.onCreate();
         Log.i(TAG, "我的服务，onCreate");
         mySQLiteOpenHelper = new MySQLiteOpenHelper(this);
-        messageList = new ArrayList<>();
         JMessageClient.registerEventReceiver(this);
     }
 
@@ -80,23 +91,129 @@ public class SmartChatService extends Service {
 
     //不同的Event接收不用的实体对象,同时在线
     public void onEvent(MessageEvent event) {
-        if (!messageList.contains(event.getMessage().getFromUser().getUserName())) {
-            messageList.add(event.getMessage().getFromUser().getUserName());
-        } else {
-            messageList.remove(event.getMessage().getFromUser().getUserName());
-            messageList.add(0, event.getMessage().getFromUser().getUserName());
+        String username = event.getMessage().getFromUser().getUserName();
+
+        for (MessageEntry messageEntry : messageList) {
+            if (messageEntry.getUsername().equals(username)) {
+                messageList.remove(messageEntry);
+            }
         }
-        for (int i = 0; i < messageList.size(); i++) {
-            Log.i(TAG, "消息列表：i=" + i + "," + messageList.get(i));
+        MessageEntry receiver = new MessageEntry();
+        receiver.setUsername(username);
+        receiver.setTime(TimeUtil.stampToDate(event.getMessage().getCreateTime() + ""));
+        Log.i(TAG, "时间:" + TimeUtil.stampToDate(event.getMessage().getCreateTime() + ""));
+        if (event.getMessage().getContent() instanceof TextContent) {
+            receiver.setContent(((TextContent) event.getMessage().getContent()).getText());
+        } else if (event.getMessage().getContent() instanceof VoiceContent) {
+            receiver.setContent("收到一条语音");
         }
+        messageList.add(0, receiver);
         if (getMessage != null) {
             getMessage.getMessageList(messageList);
         }
-        //       Log.i(TAG,"收到信息"+event.getResponseCode()+","+event.getMessage().getStatus().toString()+","+event.getMessage().haveRead());
-//        if (!event.getMessage().haveRead()){
-//            Intent intent=new Intent(this, MainActivity.class);
-//            startActivity(intent);
-//        }
+    }
+
+    //子线程模式
+    public void onEvent(ContactNotifyEvent event) {
+        String reason = event.getReason();
+        final String fromUsername = event.getFromUsername();
+        String appkey = event.getfromUserAppKey();
+
+        switch (event.getType()) {
+            case invite_received://收到好友邀请
+                AlertDialog dialogReceived = new AlertDialog.Builder(this)
+                        .setIcon(R.mipmap.icon)//设置标题的图片
+                        .setTitle(getString(R.string.friend_invite_received))//设置对话框的标题
+                        .setMessage(fromUsername + getString(R.string.friend_invite_tip))//设置对话框的内容
+                        //设置对话框的按钮
+                        .setNegativeButton(getString(R.string.reject), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ContactManager.declineInvitation(fromUsername, null, "", null);
+                                dialog.dismiss();
+                            }
+                        })
+                        .setPositiveButton(getString(R.string.accept), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ContactManager.acceptInvitation(fromUsername, null, new BasicCallback() {
+                                    @Override
+                                    public void gotResult(int i, String s) {
+                                        if (i == 0) {
+                                            ContactManager.getFriendList(new GetUserInfoListCallback() {
+                                                @Override
+                                                public void gotResult(int responseCode, String responseMessage, List<UserInfo> userInfoList) {
+                                                    if (0 == responseCode) {
+                                                        //获取好友列表成功
+//                                                        friendsListRecyclerAdapter.setDatas(userInfoList);
+//                                                        datas = userInfoList;
+//                                                        friendsListRecyclerAdapter.notifyDataSetChanged();
+                                                    } else {
+                                                        //获取好友列表失败
+                                                        Log.i(TAG, "获取好友列表失败");
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+
+                                dialog.dismiss();
+                            }
+                        }).create();
+                //在dialog  show方法之前添加如下代码，表示该dialog是一个系统的dialog**
+                dialogReceived.getWindow().setType((WindowManager.LayoutParams.TYPE_SYSTEM_ALERT));
+                dialogReceived.show();
+                break;
+            case invite_accepted://对方接收了你的好友邀请
+                AlertDialog dialogAccept = new AlertDialog.Builder(this)
+                        .setIcon(R.mipmap.icon)//设置标题的图片
+                        .setTitle(getString(R.string.add_friends))//设置对话框的标题
+                        .setMessage(fromUsername + getString(R.string.friend_invite_accept))//设置对话框的内容
+                        //设置对话框的按钮
+                        .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).create();
+                dialogAccept.getWindow().setType((WindowManager.LayoutParams.TYPE_SYSTEM_ALERT));
+                dialogAccept.show();
+                break;
+            case invite_declined://对方拒绝了你的好友邀请
+                AlertDialog dialogReject = new AlertDialog.Builder(this)
+                        .setIcon(R.mipmap.icon)//设置标题的图片
+                        .setTitle(getString(R.string.add_friends))//设置对话框的标题
+                        .setMessage(fromUsername + getString(R.string.friend_invite_reject))//设置对话框的内容
+                        //设置对话框的按钮
+                        .setNegativeButton(getString(R.string.reject), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setPositiveButton(getString(R.string.accept), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).create();
+                dialogReject.getWindow().setType((WindowManager.LayoutParams.TYPE_SYSTEM_ALERT));
+                dialogReject.show();
+                break;
+            case contact_deleted://对方将你从好友中删除
+                //...
+                Log.i(TAG, "对方将你从好友中删除");
+                break;
+            default:
+                break;
+        }
     }
 
     public class SmartChatBinder extends Binder {
@@ -106,12 +223,12 @@ public class SmartChatService extends Service {
         }
     }
 
-    public List<String> getMessageList() {
+    public List<MessageEntry> getMessageList() {
         return messageList;
     }
 
     public interface getMessageListener {
-        void getMessageList(List<String> messageList);
+        void getMessageList(List<MessageEntry> messageList);
     }
 
 
