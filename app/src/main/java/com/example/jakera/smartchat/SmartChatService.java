@@ -12,6 +12,9 @@ import com.example.jakera.smartchat.Activity.ChatActivity;
 import com.example.jakera.smartchat.Activity.MainActivity;
 import com.example.jakera.smartchat.Utils.MySQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.event.MessageEvent;
 import cn.jpush.im.android.api.event.NotificationClickEvent;
@@ -26,6 +29,12 @@ public class SmartChatService extends Service {
     private String TAG = "SmartChatService";
     private SmartChatBinder binder = new SmartChatBinder();
     private MySQLiteOpenHelper mySQLiteOpenHelper;
+    private List<String> messageList;
+    private getMessageListener getMessage;
+
+    public void setGetMessageListenr(getMessageListener listenr) {
+        this.getMessage = listenr;
+    }
 
     @Nullable
     @Override
@@ -39,6 +48,7 @@ public class SmartChatService extends Service {
         super.onCreate();
         Log.i(TAG, "我的服务，onCreate");
         mySQLiteOpenHelper = new MySQLiteOpenHelper(this);
+        messageList = new ArrayList<>();
         JMessageClient.registerEventReceiver(this);
     }
 
@@ -70,6 +80,18 @@ public class SmartChatService extends Service {
 
     //不同的Event接收不用的实体对象,同时在线
     public void onEvent(MessageEvent event) {
+        if (!messageList.contains(event.getMessage().getFromUser().getUserName())) {
+            messageList.add(event.getMessage().getFromUser().getUserName());
+        } else {
+            messageList.remove(event.getMessage().getFromUser().getUserName());
+            messageList.add(0, event.getMessage().getFromUser().getUserName());
+        }
+        for (int i = 0; i < messageList.size(); i++) {
+            Log.i(TAG, "消息列表：i=" + i + "," + messageList.get(i));
+        }
+        if (getMessage != null) {
+            getMessage.getMessageList(messageList);
+        }
         //       Log.i(TAG,"收到信息"+event.getResponseCode()+","+event.getMessage().getStatus().toString()+","+event.getMessage().haveRead());
 //        if (!event.getMessage().haveRead()){
 //            Intent intent=new Intent(this, MainActivity.class);
@@ -78,11 +100,19 @@ public class SmartChatService extends Service {
     }
 
     public class SmartChatBinder extends Binder {
-        SmartChatService getService() {
+        public SmartChatService getService() {
+            //返回当前对象，可以客户端调用Service公共方法
             return SmartChatService.this;
         }
     }
 
+    public List<String> getMessageList() {
+        return messageList;
+    }
+
+    public interface getMessageListener {
+        void getMessageList(List<String> messageList);
+    }
 
 
 }
