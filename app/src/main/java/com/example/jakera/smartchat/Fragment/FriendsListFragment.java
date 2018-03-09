@@ -101,7 +101,6 @@ public class FriendsListFragment extends Fragment implements ItemClickListener {
     }
 
 
-
     /**
      * 类似MessageEvent事件的接收，上层在需要的地方增加OfflineMessageEvent事件的接收
      * 即可实现离线消息的接收。

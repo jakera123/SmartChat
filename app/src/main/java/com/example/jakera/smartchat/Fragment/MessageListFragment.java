@@ -87,6 +87,8 @@ public class MessageListFragment extends Fragment implements ItemClickListener, 
                 SmartChatService.SmartChatBinder smartChatBinder = (SmartChatService.SmartChatBinder) service;
                 smartChatService = smartChatBinder.getService();
                 smartChatService.setGetMessageListenr(MessageListFragment.this);
+                //只能在应用的周期里调用一次，否则会重复读入数据。
+                smartChatService.getMessageFromDB();
             }
 
             @Override
@@ -100,25 +102,15 @@ public class MessageListFragment extends Fragment implements ItemClickListener, 
     public void onResume() {
         super.onResume();
         if (smartChatService != null && smartChatService.getMessageList().size() > 0) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //假如只是保留一项进行遍历，不知为何会导致结果不一致，
-                    datas.clear();
-                    MessageEntry messageEntry0 = new MessageEntry();
-                    messageEntry0.setUsername(getString(R.string.app_name));
-                    messageEntry0.setNickname("我叫小智");
-                    messageEntry0.setContent("快来自言智语吧");
-                    messageEntry0.setTime("2018.3.9");
-                    datas.add(messageEntry0);
-                    List<MessageEntry> getDatas = new ArrayList<>();
-                    getDatas = smartChatService.getMessageList();
-                    datas.addAll(getDatas);
-                    adapter.setDatas(datas);
-                    adapter.notifyDataSetChanged();
-
-                }
-            });
+            datas.clear();
+            MessageEntry messageEntry = new MessageEntry();
+            messageEntry.setUsername(getString(R.string.app_name));
+            messageEntry.setNickname("我叫小智");
+            messageEntry.setContent("快来自言智语吧");
+            messageEntry.setTime("2018.3.9");
+            datas.add(messageEntry);
+            datas.addAll(smartChatService.getMessageList());
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -144,6 +136,12 @@ public class MessageListFragment extends Fragment implements ItemClickListener, 
 
 
     @Override
+    public void onPause() {
+        super.onPause();
+        smartChatService.saveMessageListToDB();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         getActivity().unbindService(serviceConnection);
@@ -156,14 +154,13 @@ public class MessageListFragment extends Fragment implements ItemClickListener, 
             public void run() {
                 //假如只是保留一项进行遍历，不知为何会导致结果不一致，
                 datas.clear();
-                MessageEntry messageEntry0 = new MessageEntry();
-                messageEntry0.setUsername(getString(R.string.app_name));
-                messageEntry0.setNickname("我叫小智");
-                messageEntry0.setContent("快来自言智语吧");
-                messageEntry0.setTime("2018.3.9");
-                datas.add(messageEntry0);
+                MessageEntry messageEntry = new MessageEntry();
+                messageEntry.setUsername(getString(R.string.app_name));
+                messageEntry.setNickname("我叫小智");
+                messageEntry.setContent("快来自言智语吧");
+                messageEntry.setTime("2018.3.9");
+                datas.add(messageEntry);
                 datas.addAll(messageList);
-                adapter.setDatas(datas);
                 adapter.notifyDataSetChanged();
             }
         });

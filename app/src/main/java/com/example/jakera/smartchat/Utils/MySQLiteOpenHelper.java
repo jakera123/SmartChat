@@ -21,7 +21,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sql = "create table if not exists " + TABLEMESSAGELIST + " (Id integer primary key, FriendsUserName text)";
+        String sql = "create table if not exists " + TABLEMESSAGELIST + " (username text, content text,time text)";
         db.execSQL(sql);
     }
 

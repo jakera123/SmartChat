@@ -2,8 +2,11 @@ package com.example.jakera.smartchat;
 
 import android.app.AlertDialog;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -34,6 +37,10 @@ import cn.jpush.im.api.BasicCallback;
 
 /**
  * Created by jakera on 18-3-7.
+ *
+ * 接收到聊天信息先是在内存维护一个数组，退出时写入数据库，在创建时先从数据库里读取数据。
+ *调试时要注意之前的数据是否一直存在数据库里
+ *
  */
 
 public class SmartChatService extends Service {
@@ -105,7 +112,7 @@ public class SmartChatService extends Service {
         if (event.getMessage().getContent() instanceof TextContent) {
             receiver.setContent(((TextContent) event.getMessage().getContent()).getText());
         } else if (event.getMessage().getContent() instanceof VoiceContent) {
-            receiver.setContent("收到一条语音");
+            receiver.setContent("收到一条语音消息");
         }
         messageList.add(0, receiver);
         if (getMessage != null) {
@@ -229,6 +236,47 @@ public class SmartChatService extends Service {
 
     public interface getMessageListener {
         void getMessageList(List<MessageEntry> messageList);
+    }
+
+    //username content time
+    public void saveMessageListToDB() {
+        Log.i(TAG, "正在保存数据");
+        SQLiteDatabase db = mySQLiteOpenHelper.getWritableDatabase();
+        db.beginTransaction();
+        db.delete(MySQLiteOpenHelper.TABLEMESSAGELIST, null, null);
+        for (MessageEntry entry : messageList) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("username", entry.getUsername());
+            contentValues.put("content", entry.getContent());
+            contentValues.put("time", entry.getTime());
+            Log.i(TAG, entry.getUsername());
+            db.insertOrThrow(MySQLiteOpenHelper.TABLEMESSAGELIST, null, contentValues);
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+    }
+
+    //全局只需调用一次，将数据加载到内存
+    public void getMessageFromDB() {
+        SQLiteDatabase db = mySQLiteOpenHelper.getWritableDatabase();
+        String sql = "select * from " + MySQLiteOpenHelper.TABLEMESSAGELIST;
+        StringBuffer sb = new StringBuffer();
+        Cursor cursor = db.rawQuery(sql, null);
+
+        while (cursor.moveToNext()) {
+            MessageEntry entry = new MessageEntry();
+            entry.setUsername(cursor.getString(cursor.getColumnIndex("username")));
+            entry.setTime(cursor.getString(cursor.getColumnIndex("time")));
+            entry.setContent(cursor.getString(cursor.getColumnIndex("content")));
+            messageList.add(entry);
+        }
+
+        if (getMessage != null) {
+            getMessage.getMessageList(messageList);
+        }
+        Log.i(TAG, "getMessageFromDB:" + sb.toString());
+        db.close();
     }
 
 

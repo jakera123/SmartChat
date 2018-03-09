@@ -12,6 +12,7 @@ import com.example.jakera.smartchat.Entry.MessageEntry;
 import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.jpush.im.android.api.JMessageClient;
@@ -24,7 +25,7 @@ import cn.jpush.im.android.api.model.UserInfo;
  */
 
 public class MessageRecyclerViewAdapter extends RecyclerView.Adapter {
-    private List<MessageEntry> datas;
+    private List<MessageEntry> datas = new ArrayList<>();
     private ItemClickListener mItemClickListener;
 
     public void setDatas(List<MessageEntry> datas){
