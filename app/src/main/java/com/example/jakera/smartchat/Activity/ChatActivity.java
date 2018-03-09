@@ -423,7 +423,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
 //                voiceContent.getDuration();//语音文件时长
                 VoiceContent voiceContent = (VoiceContent) msg.getContent();
                 final VoiceMessageEntry voiceMessageEntry = new VoiceMessageEntry(voiceContent.getDuration(), voiceContent.getLocalPath());
-                Log.i(TAG, voiceContent.getLocalPath());
+                Log.i(TAG, "接到语音信息" + voiceContent.getLocalPath());
                 voiceMessageEntry.setUserName(friendUsername);
                 voiceMessageEntry.setViewType(BaseMessageEntry.RECEIVEMESSAGE);
                 runOnUiThread(new Runnable() {

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 
+import com.example.jakera.smartchat.Entry.Car;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.RecognizerListener;
 import com.iflytek.cloud.RecognizerResult;
@@ -20,6 +21,7 @@ import org.json.JSONTokener;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -264,4 +266,43 @@ public class RecognizerHelper {
         return UUID.randomUUID().toString();
     }
 
+
+    /**
+     * 百度识别接口
+     *
+     * @param filePath 待识别图片
+     * @return
+     */
+    public static void CarRecognize(String filePath, CarRecognizeListener listener) {
+        // 请求url
+        String url = "https://aip.baidubce.com/rest/2.0/image-classify/v1/car";
+        try {
+            // 本地文件路径
+//            String filePath = "[本地文件路径]";
+            byte[] imgData = BaiduFileUtil.readFileByBytes(filePath);
+            String imgStr = Base64Util.encode(imgData);
+            String imgParam = URLEncoder.encode(imgStr, "UTF-8");
+
+            String param = "image=" + imgParam + "&top_num=" + 5;
+
+            // 注意这里仅为了简化编码每一次请求都去获取access_token，线上环境access_token有过期时间， 客户端可自行缓存，过期后重新获取。
+            String accessToken = BaiduAuthService.getAuth();
+
+            String result = HttpUtil.post(url, accessToken, param);
+            Car car = new Car();
+            car = GsonUtils.fromJson(result, Car.class);
+            listener.onSuccess(car);
+            // Log.i("车型识别",car.result.get(0).score+car.result.get(0).name+car.color_result);
+            //System.out.println(result);
+            //03-09 20:32:28.111 31568-32355/com.example.jakera.smartchat I/System.out: {"log_id": 1961208421427382323, "result": [{"score": 0.9966436624527, "name": "兰博基尼Aventador", "year": "2007"}, {"score": 0.0014182010199875, "name": "三菱Endeavor", "year": "2013"}, {"score": 0.00065424933563918, "name": "兰博基尼Murcielago", "year": "2004-2010"}, {"score": 0.00056240992853418, "name": "兰博基尼Reventon", "year": "无年份信息"}, {"score": 0.00025521276984364, "name": "兰博基尼Huracan", "year": "2015"}], "color_result": "蓝色"}
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public interface CarRecognizeListener {
+        public void onSuccess(Car car);
+    }
 }

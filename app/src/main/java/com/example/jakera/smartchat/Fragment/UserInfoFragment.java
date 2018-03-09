@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jakera.smartchat.Activity.MainActivity;
+import com.example.jakera.smartchat.Activity.CarRecognizerActivity;
 import com.example.jakera.smartchat.Activity.UserInfoActivity;
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.Views.CircleImageView;
@@ -28,7 +27,7 @@ import cn.jpush.im.android.api.model.UserInfo;
 
 public class UserInfoFragment extends Fragment implements View.OnClickListener {
     private ImageView iv_modify_user_info;
-    private TextView tv_userinfo_username, tv_fregment_userinfo_signature;
+    private TextView tv_userinfo_username, tv_fregment_userinfo_signature, tv_recognize_car;
     private CircleImageView civ_user_portrait;
     private String TAG = "UserInfoFragment";
     private View layout;
@@ -54,6 +53,8 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
         loadUserInfo = new LoadUserInfo();
         loadUserInfo.start();
         tv_fregment_userinfo_signature = (TextView) layout.findViewById(R.id.tv_fregment_userinfo_signature);
+        tv_recognize_car = (TextView) layout.findViewById(R.id.tv_recognize_car);
+        tv_recognize_car.setOnClickListener(this);
 //        if (userInfo!=null){
 //            tv_userinfo_username.setText(userInfo.getUserName());
 //        }
@@ -68,8 +69,10 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
                 Intent intent = new Intent(getActivity(), UserInfoActivity.class);
                 startActivity(intent);
                 break;
-
-
+            case R.id.tv_recognize_car:
+                Intent intent1 = new Intent(getActivity(), CarRecognizerActivity.class);
+                startActivity(intent1);
+                break;
         }
 
     }

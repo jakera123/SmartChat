@@ -70,5 +70,7 @@
 
     <string name="myQR">我的二维码</string>
 
+    <string name="recognize_car">车型识别</string>
+
 
 </resources>

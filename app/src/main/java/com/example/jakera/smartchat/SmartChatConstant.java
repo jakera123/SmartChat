@@ -22,10 +22,14 @@ public class SmartChatConstant {
     //有道智云翻译
     public static final String YOUDAOAPIKEY = "52b12c6a6ae925be";
 
-    public static String APPNAME = "smartchat";
+    public static final String APPNAME = "smartchat";
 
     public static final String SPISLOGINKEY = "isLogin";
 
+
+    //百度
+    public static final String BAIDUAPIKEY = "eM8bZQD44G2wnXCzKznMt1Mx";
+    public static final String BAIDUSECRETKEY = "9ldsgb1Ni31QDSHfcYzOukH6FTH9W1iG";
 
 
 }

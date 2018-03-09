@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#d4211d1d"
+    android:orientation="vertical">
+
+    <include layout="@layout/title_bar" />
+
+    <ImageView
+        android:id="@+id/iv_car_picture"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@drawable/robot_portrait"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp" />
+
+    <com.example.jakera.smartchat.Views.CircleImageView
+        android:id="@+id/btn_civ_take_photo"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/camera"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:id="@+id/tv_car_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:text="@string/recognize_car"
+        android:layout_margin="20dp"
+        android:layout_gravity="center_horizontal" />
+
+
+</LinearLayout>

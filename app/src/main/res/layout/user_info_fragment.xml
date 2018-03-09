@@ -71,13 +71,13 @@
         android:background="#8f07010d" />
 
     <TextView
+        android:id="@+id/tv_recognize_car"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/person"
         android:drawableRight="@mipmap/foreward"
-        android:paddingVertical="10dp"
-        android:paddingHorizontal="20dp"
-        android:background="#d6ffffff" />
+        style="@style/UserInfoText"
+        android:text="@string/recognize_car" />
 
     <View
         android:layout_width="match_parent"
@@ -89,9 +89,7 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/person"
         android:drawableRight="@mipmap/foreward"
-        android:paddingVertical="10dp"
-        android:paddingHorizontal="20dp"
-        android:background="#d6ffffff"
+        style="@style/UserInfoText"
 
         />
 
@@ -105,28 +103,26 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/person"
         android:drawableRight="@mipmap/foreward"
-        android:paddingVertical="10dp"
-        android:paddingHorizontal="20dp"
-        android:background="#d6ffffff" />
+        style="@style/UserInfoText" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#8f07010d" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/person"
-        android:drawableRight="@mipmap/foreward"
-        android:paddingVertical="10dp"
-        android:paddingHorizontal="20dp"
-        android:background="#d6ffffff" />
+    <!--<TextView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:drawableLeft="@drawable/person"-->
+    <!--android:drawableRight="@mipmap/foreward"-->
+    <!--android:paddingVertical="10dp"-->
+    <!--android:paddingHorizontal="20dp"-->
+    <!--android:background="#d6ffffff" />-->
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#8f07010d" />
+    <!--<View-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="1dp"-->
+    <!--android:background="#8f07010d" />-->
 
     <RelativeLayout
         android:layout_width="match_parent"
