@@ -66,7 +66,6 @@ public class SmartChatService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "我的服务，onCreate");
-        mySQLiteOpenHelper = new MySQLiteOpenHelper(this);
         JMessageClient.registerEventReceiver(this);
     }
 
@@ -255,6 +254,11 @@ public class SmartChatService extends Service {
         db.setTransactionSuccessful();
         db.endTransaction();
         db.close();
+    }
+
+    //防止在未登陆时无法初始化数据库而报错
+    public void initSQlite() {
+        mySQLiteOpenHelper = new MySQLiteOpenHelper(this);
     }
 
     //全局只需调用一次，将数据加载到内存

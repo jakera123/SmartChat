@@ -184,21 +184,18 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                     break;
                 case SmartChatConstant.PAGE_TWO:
                     rb_foot_btn02.setChecked(true);
-                    rb_foot_btn02.setButtonTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_TWO);
                     setTitlebar(SmartChatConstant.PAGE_TWO);
                     break;
                 case SmartChatConstant.PAGE_THREE:
                     rb_foot_btn03.setChecked(true);
-                    rb_foot_btn03.setBackgroundTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_THREE);
                     setTitlebar(SmartChatConstant.PAGE_THREE);
                     break;
                 case SmartChatConstant.PAGE_FOUR:
                     rb_foot_btn04.setChecked(true);
-                    rb_foot_btn04.setBackgroundTintList(ColorStateList.valueOf(Color.YELLOW));
                     changeRadioButtonState(SmartChatConstant.PAGE_FOUR);
-//                    recognizerHelper.recognizeStream(Environment.getExternalStorageDirectory() + "/smart_chat_recorder_audios/yinfu.pcm");
+//                  recognizerHelper.recognizeStream(Environment.getExternalStorageDirectory() + "/smart_chat_recorder_audios/yinfu.pcm");
                     setTitlebar(SmartChatConstant.PAGE_FOUR);
                     break;
             }

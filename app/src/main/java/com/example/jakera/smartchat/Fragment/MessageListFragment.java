@@ -88,6 +88,7 @@ public class MessageListFragment extends Fragment implements ItemClickListener, 
                 smartChatService = smartChatBinder.getService();
                 smartChatService.setGetMessageListenr(MessageListFragment.this);
                 //只能在应用的周期里调用一次，否则会重复读入数据。
+                smartChatService.initSQlite();
                 smartChatService.getMessageFromDB();
             }
 
