@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 
+import com.example.jakera.smartchat.Entry.AnimalOrPlant;
 import com.example.jakera.smartchat.Entry.Car;
+import com.example.jakera.smartchat.Entry.Dish;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.RecognizerListener;
 import com.iflytek.cloud.RecognizerResult;
@@ -20,7 +22,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -40,6 +41,13 @@ public class RecognizerHelper {
     private RecognizerDialog mRecognizerDialog;
     private RecognizerDialogListener mRListener;
     private AudioDecode audioDecode;
+
+    public final static String type = "type";
+    public final static int CAR = 0;
+    public final static int ANIMAL = 1;
+    public final static int PLANT = 2;
+    public final static int FOOD = 3;
+
 
     private String TAG="RecognizerHelper";
 
@@ -273,7 +281,7 @@ public class RecognizerHelper {
      * @param filePath 待识别图片
      * @return
      */
-    public static void CarRecognize(String filePath, CarRecognizeListener listener) {
+    public static void carRecognize(String filePath, CarRecognizeListener listener) {
         // 请求url
         String url = "https://aip.baidubce.com/rest/2.0/image-classify/v1/car";
         try {
@@ -305,4 +313,106 @@ public class RecognizerHelper {
     public interface CarRecognizeListener {
         public void onSuccess(Car car);
     }
+
+
+    /**
+     * 动物识别
+     */
+
+    public static void animalRecognize(String filePath, AnimalOrPlantRecognizeListener listener) {
+        // 请求url
+        String url = "https://aip.baidubce.com/rest/2.0/image-classify/v1/animal";
+        try {
+            byte[] imgData = BaiduFileUtil.readFileByBytes(filePath);
+            String imgStr = Base64Util.encode(imgData);
+            String imgParam = URLEncoder.encode(imgStr, "UTF-8");
+
+            String param = "image=" + imgParam + "&top_num=" + 6;
+
+            // 注意这里仅为了简化编码每一次请求都去获取access_token，线上环境access_token有过期时间， 客户端可自行缓存，过期后重新获取。
+            String accessToken = BaiduAuthService.getAuth();
+
+            String result = HttpUtil.post(url, accessToken, param);
+            AnimalOrPlant animalOrPlant = new AnimalOrPlant();
+            animalOrPlant = GsonUtils.fromJson(result, AnimalOrPlant.class);
+            listener.onSuccess(animalOrPlant);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public interface AnimalOrPlantRecognizeListener {
+        public void onSuccess(AnimalOrPlant animalOrPlant);
+    }
+
+    /**
+     * 植物识别
+     *
+     * @param filePath
+     * @param listener
+     */
+    public static void plantRecognize(String filePath, AnimalOrPlantRecognizeListener listener) {
+        // 请求url
+        String url = "https://aip.baidubce.com/rest/2.0/image-classify/v1/plant";
+        try {
+            byte[] imgData = BaiduFileUtil.readFileByBytes(filePath);
+            String imgStr = Base64Util.encode(imgData);
+            String imgParam = URLEncoder.encode(imgStr, "UTF-8");
+
+            String param = "image=" + imgParam;
+
+            // 注意这里仅为了简化编码每一次请求都去获取access_token，线上环境access_token有过期时间， 客户端可自行缓存，过期后重新获取。
+            String accessToken = BaiduAuthService.getAuth();
+
+            String result = HttpUtil.post(url, accessToken, param);
+            AnimalOrPlant animalOrPlant = new AnimalOrPlant();
+            animalOrPlant = GsonUtils.fromJson(result, AnimalOrPlant.class);
+            listener.onSuccess(animalOrPlant);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 菜品识别
+     *
+     * @param filePath
+     * @return 03-13 14:29:43.360 18891-24920/com.example.jakera.smartchat I/System.out: {"log_id": 3368823822981853804, "result_num": 1, "result": [{"calorie": "0", "has_calorie": true, "name": "非菜", "probability": "0.670065"}]}
+     */
+    public static void dishRecognize(String filePath, DishRecognizeListener listener) {
+        // 请求url
+        String url = "https://aip.baidubce.com/rest/2.0/image-classify/v2/dish";
+        try {
+
+            byte[] imgData = BaiduFileUtil.readFileByBytes(filePath);
+            String imgStr = Base64Util.encode(imgData);
+            String imgParam = URLEncoder.encode(imgStr, "UTF-8");
+
+            String param = "image=" + imgParam + "&top_num=" + 5;
+
+            // 注意这里仅为了简化编码每一次请求都去获取access_token，线上环境access_token有过期时间， 客户端可自行缓存，过期后重新获取。
+            String accessToken = BaiduAuthService.getAuth();
+
+            String result = HttpUtil.post(url, accessToken, param);
+
+            Dish dish = new Dish();
+            dish = GsonUtils.fromJson(result, Dish.class);
+            listener.onSuccess(dish);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public interface DishRecognizeListener {
+        public void onSuccess(Dish dish);
+    }
+
+
+
+
+
+
+
+
+
 }

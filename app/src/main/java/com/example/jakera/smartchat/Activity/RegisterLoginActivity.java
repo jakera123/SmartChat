@@ -92,6 +92,7 @@ public class RegisterLoginActivity extends AppCompatActivity implements View.OnC
 
         loadingDialog = new LoadingDialog(RegisterLoginActivity.this);
         loadingDialog.setCanceledOnTouchOutside(false);
+        loadingDialog.setTextContent(getString(R.string.login_now));
     }
 
 

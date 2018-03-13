@@ -12,9 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jakera.smartchat.Activity.CarRecognizerActivity;
+import com.example.jakera.smartchat.Activity.RecognizerActivity;
 import com.example.jakera.smartchat.Activity.UserInfoActivity;
 import com.example.jakera.smartchat.R;
+import com.example.jakera.smartchat.Utils.RecognizerHelper;
 import com.example.jakera.smartchat.Views.CircleImageView;
 
 import cn.jpush.im.android.api.JMessageClient;
@@ -27,7 +28,7 @@ import cn.jpush.im.android.api.model.UserInfo;
 
 public class UserInfoFragment extends Fragment implements View.OnClickListener {
     private ImageView iv_modify_user_info;
-    private TextView tv_userinfo_username, tv_fregment_userinfo_signature, tv_recognize_car;
+    private TextView tv_userinfo_username, tv_fregment_userinfo_signature, tv_recognize_car, tv_recognize_animal, tv_recognize_plant, tv_recognize_food;
     private CircleImageView civ_user_portrait;
     private String TAG = "UserInfoFragment";
     private View layout;
@@ -55,6 +56,12 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
         tv_fregment_userinfo_signature = (TextView) layout.findViewById(R.id.tv_fregment_userinfo_signature);
         tv_recognize_car = (TextView) layout.findViewById(R.id.tv_recognize_car);
         tv_recognize_car.setOnClickListener(this);
+        tv_recognize_animal = (TextView) layout.findViewById(R.id.tv_recognize_animal);
+        tv_recognize_animal.setOnClickListener(this);
+        tv_recognize_plant = (TextView) layout.findViewById(R.id.tv_recognize_plant);
+        tv_recognize_plant.setOnClickListener(this);
+        tv_recognize_food = (TextView) layout.findViewById(R.id.tv_recognize_food);
+        tv_recognize_food.setOnClickListener(this);
 //        if (userInfo!=null){
 //            tv_userinfo_username.setText(userInfo.getUserName());
 //        }
@@ -64,14 +71,35 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        Bundle data = new Bundle();
         switch (v.getId()) {
             case R.id.iv_modify_user_info:
                 Intent intent = new Intent(getActivity(), UserInfoActivity.class);
                 startActivity(intent);
                 break;
             case R.id.tv_recognize_car:
-                Intent intent1 = new Intent(getActivity(), CarRecognizerActivity.class);
+                Intent intent1 = new Intent(getActivity(), RecognizerActivity.class);
+                data.putInt(RecognizerHelper.type, RecognizerHelper.CAR);
+                intent1.putExtra("data", data);
                 startActivity(intent1);
+                break;
+            case R.id.tv_recognize_animal:
+                Intent intent2 = new Intent(getActivity(), RecognizerActivity.class);
+                data.putInt(RecognizerHelper.type, RecognizerHelper.ANIMAL);
+                intent2.putExtra("data", data);
+                startActivity(intent2);
+                break;
+            case R.id.tv_recognize_plant:
+                Intent intent3 = new Intent(getActivity(), RecognizerActivity.class);
+                data.putInt(RecognizerHelper.type, RecognizerHelper.PLANT);
+                intent3.putExtra("data", data);
+                startActivity(intent3);
+                break;
+            case R.id.tv_recognize_food:
+                Intent intent4 = new Intent(getActivity(), RecognizerActivity.class);
+                data.putInt(RecognizerHelper.type, RecognizerHelper.FOOD);
+                intent4.putExtra("data", data);
+                startActivity(intent4);
                 break;
         }
 

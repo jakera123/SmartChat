@@ -71,6 +71,10 @@
     <string name="myQR">我的二维码</string>
 
     <string name="recognize_car">车型识别</string>
+    <string name="recognize_animal">动物识别</string>
+    <string name="recognize_plant">植物识别</string>
+    <string name="recognize_food">菜品识别</string>
 
+    <string name="recognizing">正在识别......</string>
 
 </resources>

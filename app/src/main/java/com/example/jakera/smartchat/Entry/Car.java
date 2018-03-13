@@ -7,7 +7,7 @@ import java.util.List;
  */
 
 public class Car {
-    public double log_id;
+    public long log_id;
     public List<CarInfo> result;
     public String color_result;
 

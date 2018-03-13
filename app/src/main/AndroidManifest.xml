@@ -64,7 +64,7 @@
         <activity android:name=".Activity.RegisterLoginActivity" />
         <activity android:name=".Activity.ModifyPortraitActivity" />
         <activity android:name=".Activity.CropPortraitAcitivity" />
-        <activity android:name=".Activity.CarRecognizerActivity" />
+        <activity android:name=".Activity.RecognizerActivity" />
         <activity android:name=".Activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
