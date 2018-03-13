@@ -1,6 +1,7 @@
 package com.example.jakera.smartchat.Utils;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -14,6 +15,8 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = JMessageClient.getMyInfo().getUserName() + ".db";
     public static final String TABLEMESSAGELIST = "MessageList";
+    public static final int MessageTextType = 0;
+    public static final int MessageVoiceType = 1;
 
     public MySQLiteOpenHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);

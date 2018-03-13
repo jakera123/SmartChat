@@ -1,12 +1,18 @@
 package com.example.jakera.smartchat.Activity;
 
+import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,11 +29,16 @@ import android.widget.TextView;
 
 import com.example.jakera.smartchat.Adapter.ChatRecyclerViewAdapter;
 import com.example.jakera.smartchat.Entry.BaseMessageEntry;
+import com.example.jakera.smartchat.Entry.MessageEntry;
 import com.example.jakera.smartchat.Entry.TextMessageEntry;
 import com.example.jakera.smartchat.Entry.VoiceMessageEntry;
+import com.example.jakera.smartchat.Fragment.MessageListFragment;
 import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
+import com.example.jakera.smartchat.SmartChatConstant;
+import com.example.jakera.smartchat.SmartChatService;
 import com.example.jakera.smartchat.Utils.MediaManager;
+import com.example.jakera.smartchat.Utils.MySQLiteOpenHelper;
 import com.example.jakera.smartchat.Utils.OkhttpHelper;
 import com.example.jakera.smartchat.Utils.RecognizerHelper;
 import com.example.jakera.smartchat.Utils.SpeechSynthesizerUtil;
@@ -72,6 +83,7 @@ import cn.jpush.im.android.tasks.GetEventNotificationTaskMng;
 import cn.jpush.im.api.BasicCallback;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.Response;
 
 /**
@@ -117,6 +129,8 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
 
     private int clickPosition;
 
+    private MySQLiteOpenHelper mySQLiteOpenHelper;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,7 +150,6 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
         friendUsername = bundle.getString("username");
         setContentView(R.layout.activity_chat);
 
-        init();
         mAudioRecorderButton=(AudioRecorderButton)findViewById(R.id.id_recorder_button);
         mAudioRecorderButton.setAudioFinishRecorderListener(new AudioRecorderButton.AudioFinishRecorderListener() {
             @Override
@@ -175,10 +188,6 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
         okhttpHelper=new OkhttpHelper();
         okhttpHelper.setCallback(this);
 
-        TextMessageEntry messageEntry0=new TextMessageEntry();
-        messageEntry0.setUserName(getString(R.string.app_name));
-        messageEntry0.setContent("嗨，我是小智，来和我聊天吧！！！");
-        messageEntry0.setViewType(TextMessageEntry.RECEIVEMESSAGE);
 
         et_input_text=(EditText)findViewById(R.id.et_input_text);
         tv_send=(TextView)findViewById(R.id.tv_send);
@@ -189,7 +198,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
                 messageEntry.setUserName(JMessageClient.getMyInfo().getUserName());
                 // messageEntry.setPortrait(BitmapFactory.decodeResource(getResources(),R.mipmap.icon));
                 messageEntry.setContent(et_input_text.getText().toString());
-                if (friendUsername.equals(getString(R.string.app_name))) {
+                if (friendUsername.equals(SmartChatConstant.APPNAME)) {
                     okhttpHelper.postToTuLingRobot(et_input_text.getText().toString(), "123456");
                 }
                 messageEntry.setViewType(TextMessageEntry.SENDMESSAGE);
@@ -253,16 +262,17 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
                 }
             }
         });
-        if (friendUsername.equals(getString(R.string.app_name))) {
-            datas.add(messageEntry0);
-        }
+
 
 
         adapter.setDatas(datas);
         recyclerView.setAdapter(adapter);
+        init();
+
     }
 
     public void init() {
+
         //创建跨应用会话
         conversation = Conversation.createSingleConversation(friendUsername, null);
         tv_title_bar_center = (TextView) findViewById(R.id.tv_title_bar_center);
@@ -292,6 +302,35 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
         speechRecognizer = SpeechRecognizer.createRecognizer(this, null);
         recognizerHelper = new RecognizerHelper(speechRecognizer);
         recognizerHelper.setVoiceToTextListener(this);
+
+        String sql = "create table if not exists " + friendUsername + " (type integer,username text,content text,RecOrSend integer,VoiceTime real,VoicePath text)";
+        mySQLiteOpenHelper = new MySQLiteOpenHelper(this);
+        SQLiteDatabase db = mySQLiteOpenHelper.getWritableDatabase();
+        String sql2 = "select * from " + friendUsername;
+        Cursor cursor = db.rawQuery(sql2, null);
+        while (cursor.moveToNext()) {
+            int MessageType = cursor.getInt(cursor.getColumnIndex("type"));
+            if (MessageType == MySQLiteOpenHelper.MessageTextType) {
+                TextMessageEntry messageEntry = new TextMessageEntry();
+                messageEntry.setUserName(cursor.getString(cursor.getColumnIndex("username")));
+                messageEntry.setContent(cursor.getString(cursor.getColumnIndex("content")));
+                messageEntry.setViewType(cursor.getInt(cursor.getColumnIndex("RecOrSend")));
+                datas.add(messageEntry);
+            } else if (MessageType == MySQLiteOpenHelper.MessageVoiceType) {
+                float seconds = cursor.getFloat(cursor.getColumnIndex("VoiceTime"));
+                String filePath = cursor.getString(cursor.getColumnIndex("VoicePath"));
+                VoiceMessageEntry voiceMessageEntry = new VoiceMessageEntry(seconds, filePath);
+                Log.i(TAG, filePath);
+                voiceMessageEntry.setUserName(cursor.getString(cursor.getColumnIndex("username")));
+                voiceMessageEntry.setViewType(cursor.getInt(cursor.getColumnIndex("RecOrSend")));
+                datas.add(voiceMessageEntry);
+            }
+        }
+        adapter.notifyDataSetChanged();
+        recyclerView.scrollToPosition(datas.size() - 1);
+        db.execSQL(sql);
+        db.close();
+
     }
 
     @Override
@@ -332,9 +371,36 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         MediaManager.release();
+        SQLiteDatabase db = mySQLiteOpenHelper.getWritableDatabase();
+        db.beginTransaction();
+        db.delete(friendUsername, null, null);
+        for (BaseMessageEntry entry : datas) {
+            ContentValues contentValues = new ContentValues();
+            if (entry instanceof VoiceMessageEntry) {
+                contentValues.put("type", MySQLiteOpenHelper.MessageVoiceType);
+                contentValues.put("username", entry.getUserName());
+                contentValues.put("RecOrSend", entry.getViewType());
+                contentValues.put("VoicePath", ((VoiceMessageEntry) entry).getFilePath());
+                contentValues.put("VoiceTime", ((VoiceMessageEntry) entry).getTime());
+            } else if (entry instanceof TextMessageEntry) {
+                contentValues.put("type", MySQLiteOpenHelper.MessageTextType);
+                contentValues.put("username", entry.getUserName());
+                contentValues.put("RecOrSend", entry.getViewType());
+                contentValues.put("content", ((TextMessageEntry) entry).getContent());
+            }
+            db.insertOrThrow(friendUsername, null, contentValues);
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
     }
 
     @Override

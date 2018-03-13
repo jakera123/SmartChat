@@ -28,6 +28,7 @@ import com.example.jakera.smartchat.Adapter.MessageRecyclerViewAdapter;
 import com.example.jakera.smartchat.Entry.MessageEntry;
 import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
+import com.example.jakera.smartchat.SmartChatConstant;
 import com.example.jakera.smartchat.SmartChatService;
 
 import java.lang.reflect.Array;
@@ -121,7 +122,7 @@ public class MessageListFragment extends Fragment implements ItemClickListener, 
         intent.setClass(getContext(), ChatActivity.class);
         Bundle data = new Bundle();
         if (position == 0) {
-            data.putString("username", getString(R.string.app_name));
+            data.putString("username", SmartChatConstant.APPNAME);
         } else {
             data.putString("username", datas.get(position).getUsername());
         }

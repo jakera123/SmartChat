@@ -15,6 +15,7 @@
         <item name="android:button">@null</item>
         <item name="android:layout_weight">1</item>
         <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">15dp</item>
     </style>
 
     <!--微信弹出对话框样式-->

@@ -16,7 +16,10 @@ import android.view.WindowManager;
 
 import com.example.jakera.smartchat.Activity.ChatActivity;
 import com.example.jakera.smartchat.Activity.MainActivity;
+import com.example.jakera.smartchat.Entry.BaseMessageEntry;
 import com.example.jakera.smartchat.Entry.MessageEntry;
+import com.example.jakera.smartchat.Entry.TextMessageEntry;
+import com.example.jakera.smartchat.Entry.VoiceMessageEntry;
 import com.example.jakera.smartchat.Utils.MySQLiteOpenHelper;
 import com.example.jakera.smartchat.Utils.TimeUtil;
 
@@ -117,6 +120,29 @@ public class SmartChatService extends Service {
         if (getMessage != null) {
             getMessage.getMessageList(messageList);
         }
+
+        String sql = "create table if not exists " + event.getMessage().getFromUser().getUserName() + " (type integer,username text,content text,RecOrSend integer,VoiceTime real,VoicePath text)";
+        SQLiteDatabase db = mySQLiteOpenHelper.getWritableDatabase();
+        db.execSQL(sql);
+        db.beginTransaction();
+        ContentValues contentValues = new ContentValues();
+        if (event.getMessage().getContent() instanceof VoiceContent) {
+            contentValues.put("type", MySQLiteOpenHelper.MessageVoiceType);
+            contentValues.put("username", event.getMessage().getFromUser().getUserName());
+            contentValues.put("RecOrSend", BaseMessageEntry.RECEIVEMESSAGE);
+            contentValues.put("VoicePath", ((VoiceContent) event.getMessage().getContent()).getLocalPath());
+            contentValues.put("VoiceTime", ((VoiceContent) event.getMessage().getContent()).getDuration());
+        } else if (event.getMessage().getContent() instanceof TextContent) {
+            contentValues.put("type", MySQLiteOpenHelper.MessageTextType);
+            contentValues.put("username", event.getMessage().getFromUser().getUserName());
+            contentValues.put("RecOrSend", BaseMessageEntry.RECEIVEMESSAGE);
+            contentValues.put("content", ((TextContent) event.getMessage().getContent()).getText());
+        }
+        db.insertOrThrow(event.getMessage().getFromUser().getUserName(), null, contentValues);
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+
     }
 
     //子线程模式
@@ -282,6 +308,5 @@ public class SmartChatService extends Service {
         Log.i(TAG, "getMessageFromDB:" + sb.toString());
         db.close();
     }
-
 
 }

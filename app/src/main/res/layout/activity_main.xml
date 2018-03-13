@@ -17,6 +17,7 @@
         android:layout_height="match_parent"
         android:layout_above="@id/spilt_line"
         android:layout_below="@id/main_title_bar"
+        android:background="#68e2dfdf"
         />
 
     <View
@@ -34,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="5dp"
-        android:background="#d0d4d1d1"
+        android:background="#ebffffff"
         android:orientation="horizontal">
         
         <RadioButton
