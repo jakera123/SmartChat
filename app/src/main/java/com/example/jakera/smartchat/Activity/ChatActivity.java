@@ -37,6 +37,7 @@ import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.SmartChatConstant;
 import com.example.jakera.smartchat.SmartChatService;
+import com.example.jakera.smartchat.Utils.DeleteFileUtil;
 import com.example.jakera.smartchat.Utils.MediaManager;
 import com.example.jakera.smartchat.Utils.MySQLiteOpenHelper;
 import com.example.jakera.smartchat.Utils.OkhttpHelper;
@@ -44,6 +45,9 @@ import com.example.jakera.smartchat.Utils.RecognizerHelper;
 import com.example.jakera.smartchat.Utils.SpeechSynthesizerUtil;
 import com.example.jakera.smartchat.Utils.TranslateUtil;
 import com.example.jakera.smartchat.Views.AudioRecorderButton;
+import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
@@ -130,6 +134,8 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
     private int clickPosition;
 
     private MySQLiteOpenHelper mySQLiteOpenHelper;
+
+    private FFmpeg fFmpeg;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -306,6 +312,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
         String sql = "create table if not exists " + friendUsername + " (type integer,username text,content text,RecOrSend integer,VoiceTime real,VoicePath text)";
         mySQLiteOpenHelper = new MySQLiteOpenHelper(this);
         SQLiteDatabase db = mySQLiteOpenHelper.getWritableDatabase();
+        db.execSQL(sql);
         String sql2 = "select * from " + friendUsername;
         Cursor cursor = db.rawQuery(sql2, null);
         while (cursor.moveToNext()) {
@@ -328,8 +335,9 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
         }
         adapter.notifyDataSetChanged();
         recyclerView.scrollToPosition(datas.size() - 1);
-        db.execSQL(sql);
         db.close();
+
+        fFmpeg = FFmpeg.getInstance(this);
 
     }
 
@@ -407,8 +415,80 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
     public void OnItemClick(View v, final int position) {
         if(datas.get(position) instanceof VoiceMessageEntry){
             MediaManager.playSound(((VoiceMessageEntry) datas.get(position)).getFilePath(),null);
-            recognizerHelper.recognizerFromAmr(((VoiceMessageEntry) datas.get(position)).getFilePath());
             clickPosition = position;
+            if (((VoiceMessageEntry) datas.get(position)).getViewType() == VoiceMessageEntry.RECEIVEMESSAGE) {
+                //((VoiceMessageEntry) datas.get(position)).getFilePath()
+
+                DeleteFileUtil.deleteFile(getCacheDir() + "/receiverReconizer.wav");
+                try {
+
+                    /**
+                     * ffmpeg -i INPUT -ac CHANNELS -ar FREQUENCY -acodec PCMFORMAT OUTPUT
+
+                     INPUT : mp3文件,假如音频流没有任何的声音也会导致转换失败。
+
+                     CHANNELS ：值得选项为1和2
+
+                     PCMFORMAT ：值得选项为pcm_u8，pcm_s16le ，pcm_s16be，pcm_u16le，pcm_u16be
+
+                     FREQUENCY ：8000，11025 ，22050，44100
+
+                     例如：ffmpeg -i F:\test\dizi.mp3 -ar 44100 -ac 1 -acodec pcm_u8 F:\test\dizi.wav
+
+                     输出44100采样率，1个声道，8bits的wav文件  注意查看log，找出转换失败的原因
+                     */
+                    String[] commands = new String[9];
+                    commands[0] = "-i";
+                    commands[1] = ((VoiceMessageEntry) datas.get(position)).getFilePath();
+                    commands[2] = "-ac";
+                    commands[3] = "1";
+                    commands[4] = "-ar";
+                    //改为16KHZ的识别率高很多,官方是指定8K和16K
+                    commands[5] = "22050";
+                    commands[6] = "-acodec";
+                    //四种格式仅仅只有这种可以
+                    commands[7] = "pcm_s16le";
+                    commands[8] = getCacheDir() + "/receiverReconizer.wav";
+                    fFmpeg.execute(commands, new ExecuteBinaryResponseHandler() {
+                        @Override
+                        public void onSuccess(String message) {
+                            super.onSuccess(message);
+                            Log.i(TAG, "执行ffmpeg成功：" + message);
+                            recognizerHelper.recognizeStream(getCacheDir() + "/receiverReconizer.wav");
+                        }
+
+                        @Override
+                        public void onProgress(String message) {
+                            super.onProgress(message);
+                            Log.i(TAG, "正在执行ffmpeg：" + message);
+                        }
+
+                        @Override
+                        public void onFailure(String message) {
+                            super.onFailure(message);
+                            Log.i(TAG, "执行ffmpeg失败：" + message);
+                        }
+
+                        @Override
+                        public void onStart() {
+                            super.onStart();
+                            Log.i(TAG, "开始执行ffmpeg");
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            super.onFinish();
+                            Log.i(TAG, "执行ffmpeg完成");
+                        }
+                    });
+                } catch (FFmpegCommandAlreadyRunningException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                recognizerHelper.recognizerFromAmr(((VoiceMessageEntry) datas.get(position)).getFilePath());
+
+            }
 
         } else if (datas.get(position) instanceof TextMessageEntry) {
             String fromLanguage, toLanguage;
@@ -579,13 +659,14 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
 
     @Override
     public void getRecognizeResult(String result) {
-        if (result.length() <= 1) {
-            return;
-        }
         VoiceMessageEntry entry = (VoiceMessageEntry) datas.get(clickPosition);
         final TextMessageEntry messageEntry = new TextMessageEntry();
         messageEntry.setUserName(entry.getUserName());
-        messageEntry.setContent(result);
+        if (result.length() <= 1) {
+            messageEntry.setContent("说连惯可以提高识别率哦");
+        } else {
+            messageEntry.setContent(result);
+        }
         messageEntry.setViewType(entry.getViewType());
         datas.add(clickPosition + 1, messageEntry);
         adapter.notifyDataSetChanged();

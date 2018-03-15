@@ -13,6 +13,7 @@ import cn.jpush.im.android.api.JMessageClient;
 
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
+    //TODO:这里用户名要缓存到本地，否则会出现
     private static final String DB_NAME = JMessageClient.getMyInfo().getUserName() + ".db";
     public static final String TABLEMESSAGELIST = "MessageList";
     public static final int MessageTextType = 0;
