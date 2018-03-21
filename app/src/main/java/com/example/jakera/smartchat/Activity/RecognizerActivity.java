@@ -126,6 +126,10 @@ public class RecognizerActivity extends AppCompatActivity {
 
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != RESULT_OK) {        //此处的 RESULT_OK 是系统自定义得一个常量
+            Log.e(TAG, "ActivityResult resultCode error");
+            return;
+        }
         loadingDialog.show();
 
         //外界的程序访问ContentProvider所提供数据 可以通过ContentResolver接口

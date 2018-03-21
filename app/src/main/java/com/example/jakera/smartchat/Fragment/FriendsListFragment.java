@@ -66,8 +66,8 @@ public class FriendsListFragment extends Fragment implements ItemClickListener {
     @Override
     public void onResume() {
         super.onResume();
-        //注册事件，以接收各种用户请求
-        JMessageClient.registerEventReceiver(this);
+//        //注册事件，以接收各种用户请求
+//        JMessageClient.registerEventReceiver(this);
 
         ContactManager.getFriendList(new GetUserInfoListCallback() {
             @Override
@@ -101,25 +101,25 @@ public class FriendsListFragment extends Fragment implements ItemClickListener {
     }
 
 
-    /**
-     * 类似MessageEvent事件的接收，上层在需要的地方增加OfflineMessageEvent事件的接收
-     * 即可实现离线消息的接收。
-     **/
-    public void onEvent(OfflineMessageEvent event) {
-        //获取事件发生的会话对象
-        Log.i(TAG, "收到消息");
-        Conversation conversation = event.getConversation();
-        List<Message> newMessageList = event.getOfflineMessageList();//获取此次离线期间会话收到的新消息列表
-        System.out.println(String.format(Locale.SIMPLIFIED_CHINESE, "收到%d条来自%s的离线消息。\n", newMessageList.size(), conversation.getTargetId()));
-        for (int i = 0; i < newMessageList.size(); i++) {
-            //  {"text":"你好","extras":{}}
-            Log.i(TAG, "i=" + i + "," + newMessageList.get(i).getContent().toJson());
-//            Log.i(TAG,"i="+i+","+newMessageList.get(i).getContent().);
-
-        }
-
-
-    }
+//    /**
+//     * 类似MessageEvent事件的接收，上层在需要的地方增加OfflineMessageEvent事件的接收
+//     * 即可实现离线消息的接收。
+//     **/
+//    public void onEvent(OfflineMessageEvent event) {
+//        //获取事件发生的会话对象
+//        Log.i(TAG, "收到消息");
+//        Conversation conversation = event.getConversation();
+//        List<Message> newMessageList = event.getOfflineMessageList();//获取此次离线期间会话收到的新消息列表
+//        System.out.println(String.format(Locale.SIMPLIFIED_CHINESE, "收到%d条来自%s的离线消息。\n", newMessageList.size(), conversation.getTargetId()));
+//        for (int i = 0; i < newMessageList.size(); i++) {
+//            //  {"text":"你好","extras":{}}
+//            Log.i(TAG, "i=" + i + "," + newMessageList.get(i).getContent().toJson());
+////            Log.i(TAG,"i="+i+","+newMessageList.get(i).getContent().);
+//
+//        }
+//
+//
+//    }
 
 
     @Override
