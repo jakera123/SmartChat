@@ -25,6 +25,7 @@ public class SmartChatConstant {
     public static final String APPNAME = "smartchat";
 
     public static final String SPISLOGINKEY = "isLogin";
+    public static final String SPUSERNAME = "username";
 
 
     //百度

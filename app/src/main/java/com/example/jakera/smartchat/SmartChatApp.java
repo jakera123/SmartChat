@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.example.jakera.smartchat.Activity.ChatActivity;
+import com.example.jakera.smartchat.Utils.SharePreferenceUtils;
 import com.example.jakera.smartchat.Utils.SpeechSynthesizerUtil;
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
 import com.github.hiteshsondhi88.libffmpeg.FFmpegLoadBinaryResponseHandler;
@@ -24,9 +25,13 @@ public class SmartChatApp extends Application {
     private final String APPID="5a686b03";
     private String TAG = "SmartChatApp";
 
+    public static String USERNAME;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        USERNAME = (String) SharePreferenceUtils.get(this, SmartChatConstant.SPUSERNAME, "");
 
         new Thread(new Runnable() {
             @Override

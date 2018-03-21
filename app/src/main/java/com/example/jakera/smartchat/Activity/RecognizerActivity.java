@@ -1,13 +1,17 @@
 package com.example.jakera.smartchat.Activity;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -63,6 +67,11 @@ public class RecognizerActivity extends AppCompatActivity {
         window.setStatusBarColor(Color.BLACK);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_recognizer);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    1);
+        }
         Intent intent = getIntent();
         Bundle data = intent.getBundleExtra("data");
         actitityType = data.getInt(RecognizerHelper.type);

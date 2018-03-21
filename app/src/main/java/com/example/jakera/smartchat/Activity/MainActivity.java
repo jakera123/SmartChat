@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.jpush.im.android.api.ContactManager;
+import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.api.BasicCallback;
 
 public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener,ViewPager.OnPageChangeListener,RecognizerDialogListener{
@@ -94,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         mReconizerDialog=new RecognizerDialog(this,null);
         recognizerHelper=new RecognizerHelper(this,speechRecognizer,mReconizerDialog);
         recognizerHelper.setListener(this);
-
 
         mSmartChatFragmentAdapter=new SmartChatFragmentAdapter(getSupportFragmentManager());
         initView();

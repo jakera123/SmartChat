@@ -5,6 +5,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.jakera.smartchat.SmartChatApp;
+import com.example.jakera.smartchat.SmartChatConstant;
+
 import cn.jpush.im.android.api.JMessageClient;
 
 /**
@@ -14,7 +17,7 @@ import cn.jpush.im.android.api.JMessageClient;
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
     //TODO:这里用户名要缓存到本地，否则会出现
-    private static final String DB_NAME = JMessageClient.getMyInfo().getUserName() + ".db";
+    private static final String DB_NAME = SmartChatApp.USERNAME + ".db";
     public static final String TABLEMESSAGELIST = "MessageList";
     public static final int MessageTextType = 0;
     public static final int MessageVoiceType = 1;

@@ -149,6 +149,7 @@ public class RegisterLoginActivity extends AppCompatActivity implements View.OnC
                                                     Toast.makeText(RegisterLoginActivity.this, getString(R.string.invalid_password), Toast.LENGTH_SHORT).show();
                                                 } else if (i == 0) {
                                                     SharePreferenceUtils.put(RegisterLoginActivity.this, SmartChatConstant.SPISLOGINKEY, true);
+                                                    SharePreferenceUtils.put(RegisterLoginActivity.this, SmartChatConstant.SPUSERNAME, JMessageClient.getMyInfo().getUserName());
                                                     Intent intent = new Intent(RegisterLoginActivity.this, MainActivity.class);
                                                     startActivity(intent);
                                                     RegisterLoginActivity.this.finish();
@@ -181,6 +182,7 @@ public class RegisterLoginActivity extends AppCompatActivity implements View.OnC
                                 Toast.makeText(RegisterLoginActivity.this, getString(R.string.invalid_password), Toast.LENGTH_SHORT).show();
                             } else if (i == 0) {
                                 SharePreferenceUtils.put(RegisterLoginActivity.this, SmartChatConstant.SPISLOGINKEY, true);
+                                SharePreferenceUtils.put(RegisterLoginActivity.this, SmartChatConstant.SPUSERNAME, JMessageClient.getMyInfo().getUserName());
                                 Intent intent = new Intent(RegisterLoginActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 RegisterLoginActivity.this.finish();
