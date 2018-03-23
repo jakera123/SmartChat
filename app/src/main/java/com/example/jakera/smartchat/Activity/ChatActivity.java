@@ -681,7 +681,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
         final TextMessageEntry messageEntry = new TextMessageEntry();
         messageEntry.setUserName(entry.getUserName());
         if (result.length() <= 1) {
-            messageEntry.setContent("说连惯可以提高识别率哦");
+            return;
         } else {
             messageEntry.setContent(result);
         }

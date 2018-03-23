@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jakera.smartchat.Activity.ContactAuthorActivity;
 import com.example.jakera.smartchat.Activity.RecognizerActivity;
 import com.example.jakera.smartchat.Activity.UserInfoActivity;
 import com.example.jakera.smartchat.R;
@@ -28,7 +29,7 @@ import cn.jpush.im.android.api.model.UserInfo;
 
 public class UserInfoFragment extends Fragment implements View.OnClickListener {
     private ImageView iv_modify_user_info;
-    private TextView tv_userinfo_username, tv_fregment_userinfo_signature, tv_recognize_car, tv_recognize_animal, tv_recognize_plant, tv_recognize_food;
+    private TextView tv_userinfo_username, tv_fregment_userinfo_signature, tv_recognize_car, tv_recognize_animal, tv_recognize_plant, tv_recognize_food, tv_contact_author;
     private CircleImageView civ_user_portrait;
     private String TAG = "UserInfoFragment";
     private View layout;
@@ -62,6 +63,8 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
         tv_recognize_plant.setOnClickListener(this);
         tv_recognize_food = (TextView) layout.findViewById(R.id.tv_recognize_food);
         tv_recognize_food.setOnClickListener(this);
+        tv_contact_author = (TextView) layout.findViewById(R.id.tv_contact_author);
+        tv_contact_author.setOnClickListener(this);
 //        if (userInfo!=null){
 //            tv_userinfo_username.setText(userInfo.getUserName());
 //        }
@@ -100,6 +103,10 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
                 data.putInt(RecognizerHelper.type, RecognizerHelper.FOOD);
                 intent4.putExtra("data", data);
                 startActivity(intent4);
+                break;
+            case R.id.tv_contact_author:
+                Intent intent5 = new Intent(getActivity(), ContactAuthorActivity.class);
+                startActivity(intent5);
                 break;
         }
 
