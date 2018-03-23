@@ -247,7 +247,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
         Log.i(TAG, "当前用户名为：" + SmartChatApp.USERNAME);
 
 
-        adapter = new ChatRecyclerViewAdapter(SmartChatApp.USERNAME, friendUsername);
+        adapter = new ChatRecyclerViewAdapter(JMessageClient.getMyInfo().getUserName(), friendUsername);
         adapter.setOnItemClickListener(this);
 
         datas=new ArrayList<>();
