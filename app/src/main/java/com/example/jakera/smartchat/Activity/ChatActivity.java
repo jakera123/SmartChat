@@ -35,6 +35,7 @@ import com.example.jakera.smartchat.Entry.VoiceMessageEntry;
 import com.example.jakera.smartchat.Fragment.MessageListFragment;
 import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
+import com.example.jakera.smartchat.SmartChatApp;
 import com.example.jakera.smartchat.SmartChatConstant;
 import com.example.jakera.smartchat.SmartChatService;
 import com.example.jakera.smartchat.Utils.DeleteFileUtil;
@@ -135,6 +136,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
 
     private MySQLiteOpenHelper mySQLiteOpenHelper;
 
+
     private FFmpeg fFmpeg;
 
     @Override
@@ -150,11 +152,60 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
         window.setStatusBarColor(Color.BLACK);
         getSupportActionBar().hide();
 
-
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("username");
         friendUsername = bundle.getString("username");
         setContentView(R.layout.activity_chat);
+
+
+        initAudio();
+        sendMessage();
+        init();
+
+    }
+
+    private void sendMessage() {
+        tv_send = (TextView) findViewById(R.id.tv_send);
+        tv_send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final TextMessageEntry messageEntry = new TextMessageEntry();
+                messageEntry.setUserName(JMessageClient.getMyInfo().getUserName());
+                // messageEntry.setPortrait(BitmapFactory.decodeResource(getResources(),R.mipmap.icon));
+                messageEntry.setContent(et_input_text.getText().toString());
+                if (friendUsername.equals(SmartChatConstant.APPNAME)) {
+                    okhttpHelper.postToTuLingRobot(et_input_text.getText().toString(), "123456");
+                }
+                messageEntry.setViewType(TextMessageEntry.SENDMESSAGE);
+                datas.add(messageEntry);
+                adapter.notifyDataSetChanged();
+                recyclerView.scrollToPosition(datas.size() - 1);
+
+
+                // JMessageClient.createSingleTextMessage("mary",null,"你好啊");
+                MessageContent content = new TextContent(et_input_text.getText().toString());
+                //创建一条消息
+                Message message = conversation.createSendMessage(content);
+                message.setOnSendCompleteCallback(new BasicCallback() {
+                    @Override
+                    public void gotResult(int i, String s) {
+                        Log.i(TAG, "发送结果: i=" + i + ",s=" + s);
+                    }
+                });
+                MessageSendingOptions options = new MessageSendingOptions();
+                options.setRetainOffline(false);
+                //发送消息
+                JMessageClient.sendMessage(message);
+
+
+                et_input_text.setText("");
+
+
+            }
+        });
+    }
+
+    private void initAudio() {
 
         mAudioRecorderButton=(AudioRecorderButton)findViewById(R.id.id_recorder_button);
         mAudioRecorderButton.setAudioFinishRecorderListener(new AudioRecorderButton.AudioFinishRecorderListener() {
@@ -184,9 +235,19 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
                 recyclerView.scrollToPosition(datas.size()-1);
             }
         });
+
+    }
+
+    public void init() {
+
+
         recyclerView=(RecyclerView)findViewById(R.id.recyclerview_chat);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter=new ChatRecyclerViewAdapter();
+
+        Log.i(TAG, "当前用户名为：" + SmartChatApp.USERNAME);
+
+
+        adapter = new ChatRecyclerViewAdapter(SmartChatApp.USERNAME, friendUsername);
         adapter.setOnItemClickListener(this);
 
         datas=new ArrayList<>();
@@ -196,44 +257,6 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
 
 
         et_input_text=(EditText)findViewById(R.id.et_input_text);
-        tv_send=(TextView)findViewById(R.id.tv_send);
-        tv_send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final TextMessageEntry messageEntry = new TextMessageEntry();
-                messageEntry.setUserName(JMessageClient.getMyInfo().getUserName());
-                // messageEntry.setPortrait(BitmapFactory.decodeResource(getResources(),R.mipmap.icon));
-                messageEntry.setContent(et_input_text.getText().toString());
-                if (friendUsername.equals(SmartChatConstant.APPNAME)) {
-                    okhttpHelper.postToTuLingRobot(et_input_text.getText().toString(), "123456");
-                }
-                messageEntry.setViewType(TextMessageEntry.SENDMESSAGE);
-                datas.add(messageEntry);
-                adapter.notifyDataSetChanged();
-                recyclerView.scrollToPosition(datas.size()-1);
-
-
-                // JMessageClient.createSingleTextMessage("mary",null,"你好啊");
-                MessageContent content = new TextContent(et_input_text.getText().toString());
-                //创建一条消息
-                Message message = conversation.createSendMessage(content);
-                message.setOnSendCompleteCallback(new BasicCallback() {
-                    @Override
-                    public void gotResult(int i, String s) {
-                        Log.i(TAG, "发送结果: i=" + i + ",s=" + s);
-                    }
-                });
-                MessageSendingOptions options = new MessageSendingOptions();
-                options.setRetainOffline(false);
-                //发送消息
-                JMessageClient.sendMessage(message);
-
-
-                et_input_text.setText("");
-
-
-            }
-        });
 
 
         btn_voice_chat=(ImageButton)findViewById(R.id.btn_voice_chat);
@@ -270,14 +293,9 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
         });
 
 
-
         adapter.setDatas(datas);
         recyclerView.setAdapter(adapter);
-        init();
 
-    }
-
-    public void init() {
 
         //创建跨应用会话
         conversation = Conversation.createSingleConversation(friendUsername, null);

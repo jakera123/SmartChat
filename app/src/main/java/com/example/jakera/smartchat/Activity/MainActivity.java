@@ -42,7 +42,7 @@ import cn.jpush.im.android.api.ContactManager;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.api.BasicCallback;
 
-public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener,ViewPager.OnPageChangeListener,RecognizerDialogListener{
+public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener, ViewPager.OnPageChangeListener {
 
 
 
@@ -54,16 +54,16 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     private RadioGroup rg_foot_bar;
     private RadioButton rb_foot_btn01,rb_foot_btn02,rb_foot_btn03,rb_foot_btn04;
     private ViewPager mainViewPager;
-    private ImageView btn_voice;
+//    private ImageView btn_voice;
 
     private SmartChatFragmentAdapter mSmartChatFragmentAdapter;
 
     private List<RadioButton> radioButtons;
 
 
-    private SpeechRecognizer speechRecognizer;
-    private RecognizerHelper recognizerHelper;
-    private RecognizerDialog mReconizerDialog;
+//    private SpeechRecognizer speechRecognizer;
+//    private RecognizerHelper recognizerHelper;
+//    private RecognizerDialog mReconizerDialog;
 
     private RelativeLayout ralat_layout_title_bar;
     private TextView tv_title_bar_center;
@@ -91,10 +91,10 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                     1);
         }
 
-        speechRecognizer=SpeechRecognizer.createRecognizer(this,null);
-        mReconizerDialog=new RecognizerDialog(this,null);
-        recognizerHelper=new RecognizerHelper(this,speechRecognizer,mReconizerDialog);
-        recognizerHelper.setListener(this);
+//        speechRecognizer=SpeechRecognizer.createRecognizer(this,null);
+//        mReconizerDialog=new RecognizerDialog(this,null);
+//        recognizerHelper=new RecognizerHelper(this,speechRecognizer,mReconizerDialog);
+        // recognizerHelper.setListener(this);
 
         mSmartChatFragmentAdapter=new SmartChatFragmentAdapter(getSupportFragmentManager());
         initView();
@@ -126,13 +126,13 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         rg_foot_bar.setOnCheckedChangeListener(this);
 
 
-        btn_voice=(ImageView)findViewById(R.id.btn_voice);
-        btn_voice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recognizerHelper.startSpeechRecognizer();
-            }
-        });
+//        btn_voice=(ImageView)findViewById(R.id.btn_voice);
+//        btn_voice.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                recognizerHelper.startSpeechRecognizer();
+//            }
+//        });
 
         setTitlebar(SmartChatConstant.PAGE_ONE);
 
@@ -249,35 +249,35 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     }
 
 
-    @Override
-    public void onResult(RecognizerResult recognizerResult, boolean b) {
-        String text=RecognizerHelper.parseIatResult(recognizerResult.getResultString());
-        switch (text){
-            case "聊聊":
-                mainViewPager.setCurrentItem(SmartChatConstant.PAGE_ONE);
-                changeRadioButtonState(SmartChatConstant.PAGE_ONE);
-                break;
-            case "好友列表":
-                mainViewPager.setCurrentItem(SmartChatConstant.PAGE_TWO);
-                changeRadioButtonState(SmartChatConstant.PAGE_TWO);
-                break;
-            case "看看":
-                mainViewPager.setCurrentItem(SmartChatConstant.PAGE_THREE);
-                changeRadioButtonState(SmartChatConstant.PAGE_THREE);
-                break;
-            case "我的":
-                mainViewPager.setCurrentItem(SmartChatConstant.PAGE_FOUR);
-                changeRadioButtonState(SmartChatConstant.PAGE_FOUR);
-                break;
-
-        }
-        Log.i(TAG,text);
-    }
-
-    @Override
-    public void onError(SpeechError speechError) {
-
-    }
+//    @Override
+//    public void onResult(RecognizerResult recognizerResult, boolean b) {
+//        String text=RecognizerHelper.parseIatResult(recognizerResult.getResultString());
+//        switch (text){
+//            case "聊聊":
+//                mainViewPager.setCurrentItem(SmartChatConstant.PAGE_ONE);
+//                changeRadioButtonState(SmartChatConstant.PAGE_ONE);
+//                break;
+//            case "好友列表":
+//                mainViewPager.setCurrentItem(SmartChatConstant.PAGE_TWO);
+//                changeRadioButtonState(SmartChatConstant.PAGE_TWO);
+//                break;
+//            case "看看":
+//                mainViewPager.setCurrentItem(SmartChatConstant.PAGE_THREE);
+//                changeRadioButtonState(SmartChatConstant.PAGE_THREE);
+//                break;
+//            case "我的":
+//                mainViewPager.setCurrentItem(SmartChatConstant.PAGE_FOUR);
+//                changeRadioButtonState(SmartChatConstant.PAGE_FOUR);
+//                break;
+//
+//        }
+//        Log.i(TAG,text);
+//    }
+//
+//    @Override
+//    public void onError(SpeechError speechError) {
+//
+//    }
 
     public void setTitlebar(int page) {
         Log.i(TAG, TAG + page);

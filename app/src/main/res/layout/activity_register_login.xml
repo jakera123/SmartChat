@@ -87,6 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/person"
+            android:drawablePadding="10dp"
             android:layout_marginHorizontal="30dp"
             android:background="@drawable/edit_border"
             android:padding="10dp"
@@ -100,6 +101,7 @@
             android:layout_marginHorizontal="30dp"
             android:background="@drawable/edit_border"
             android:padding="10dp"
+            android:drawablePadding="10dp"
             android:layout_marginTop="10dp"
             android:inputType="textPassword"
             android:hint="请输入密码" />
@@ -112,6 +114,7 @@
             android:layout_marginHorizontal="30dp"
             android:background="@drawable/edit_border"
             android:padding="10dp"
+            android:drawablePadding="10dp"
             android:layout_marginTop="10dp"
             android:inputType="textPassword"
             android:hint="请确认密码" />

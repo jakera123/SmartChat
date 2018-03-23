@@ -1,6 +1,7 @@
 package com.example.jakera.smartchat.Adapter;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import com.example.jakera.smartchat.Entry.MessageEntry;
 import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

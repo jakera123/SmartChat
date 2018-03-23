@@ -1,7 +1,11 @@
 package com.example.jakera.smartchat.Adapter;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,10 +19,12 @@ import com.example.jakera.smartchat.Entry.TextMessageEntry;
 import com.example.jakera.smartchat.Entry.VoiceMessageEntry;
 import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
+import com.example.jakera.smartchat.SmartChatApp;
 import com.example.jakera.smartchat.Views.BubbleLinearLayout;
 import com.example.jakera.smartchat.Views.BubbleTextView;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.GetAvatarBitmapCallback;
@@ -34,7 +40,36 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
     private ItemClickListener mItemClickListener;
     private ChatRecyclerViewAdapter.ChatMessageRightViewHolder tempRightHolder;
     private ChatRecyclerViewAdapter.ChatMessageLeftViewHolder tempLeftHolder;
+    private Drawable myPortrait, friendsPortrait;
 
+    public ChatRecyclerViewAdapter(String username, String friendsusername) {
+        JMessageClient.getUserInfo(username, new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int i, String s, UserInfo userInfo) {
+                userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
+                    @Override
+                    public void gotResult(int i, String s, Bitmap bitmap) {
+                        myPortrait = new BitmapDrawable(bitmap);
+                        ChatRecyclerViewAdapter.this.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
+
+        JMessageClient.getUserInfo(friendsusername, new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int i, String s, UserInfo userInfo) {
+                userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
+                    @Override
+                    public void gotResult(int i, String s, Bitmap bitmap) {
+                        friendsPortrait = new BitmapDrawable(bitmap);
+                        ChatRecyclerViewAdapter.this.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
+
+    }
 
     public void setDatas(List<BaseMessageEntry> datas){
         this.datas=datas;
@@ -73,83 +108,54 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
                     tempRightHolder.bubble_textview.setVisibility(View.VISIBLE);
                     tempRightHolder.chat_right_bubble.setVisibility(View.GONE);
                     tempRightHolder.id_recorder_time_right.setVisibility(View.GONE);
-                    JMessageClient.getUserInfo(tempMessage.getUserName(), new GetUserInfoCallback() {
-                        @Override
-                        public void gotResult(int i, String s, UserInfo userInfo) {
-                            userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
-                                @Override
-                                public void gotResult(int i, String s, Bitmap bitmap) {
-                                    tempRightHolder.iv_portrait.setImageBitmap(bitmap);
-                                }
-                            });
-                        }
-                    });
+                    // tempRightHolder.iv_portrait.setImageBitmap(myPortrait);
                     // tempHolder.iv_portrait.setImageBitmap(tempMessage.getPortrait());
                     //为Item设置监听所用
-                    tempRightHolder.iv_portrait.setTag(position);
                     tempRightHolder.bubble_textview.setText(tempMessage.getContent());
                 }else if(datas.get(position) instanceof VoiceMessageEntry){
                     VoiceMessageEntry tempMessage=(VoiceMessageEntry)datas.get(position);
                     tempRightHolder.bubble_textview.setVisibility(View.GONE);
                     tempRightHolder.id_recorder_time_right.setVisibility(View.VISIBLE);
                     tempRightHolder.chat_right_bubble.setVisibility(View.VISIBLE);
-                    JMessageClient.getUserInfo(tempMessage.getUserName(), new GetUserInfoCallback() {
-                        @Override
-                        public void gotResult(int i, String s, UserInfo userInfo) {
-                            userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
-                                @Override
-                                public void gotResult(int i, String s, Bitmap bitmap) {
-                                    tempRightHolder.iv_portrait.setImageBitmap(bitmap);
-                                }
-                            });
-                        }
-                    });
+//                    tempRightHolder.iv_portrait.setImageBitmap(myPortrait);
                     // tempHolder.iv_portrait.setImageBitmap(tempMessage.getPortrait());
-                    tempRightHolder.iv_portrait.setTag(position);
+                    // tempRightHolder.iv_portrait.setImageDrawable(myPortrait);
+                    //   tempRightHolder.iv_portrait.setTag(position);
                     tempRightHolder.id_recorder_time_right.setText((int) tempMessage.getTime() + "");
                 }
+
+            tempRightHolder.iv_portrait.setImageDrawable(myPortrait);
+            tempRightHolder.iv_portrait.setTag(position);
+
+
 
         }else if (getItemViewType(position)==TextMessageEntry.RECEIVEMESSAGE){
             tempLeftHolder = (ChatRecyclerViewAdapter.ChatMessageLeftViewHolder) holder;
                 if (datas.get(position) instanceof TextMessageEntry){
                     TextMessageEntry tempMessage = (TextMessageEntry) datas.get(position);
-                    JMessageClient.getUserInfo(tempMessage.getUserName(), new GetUserInfoCallback() {
-                        @Override
-                        public void gotResult(int i, String s, UserInfo userInfo) {
-                            userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
-                                @Override
-                                public void gotResult(int i, String s, Bitmap bitmap) {
-                                    tempLeftHolder.iv_portrait.setImageBitmap(bitmap);
-                                }
-                            });
-                        }
-                    });
+                    //   tempLeftHolder.iv_portrait.setImageBitmap(friendsPortrait);
+                    // tempLeftHolder.iv_portrait.setImageDrawable(friendsPortrait);
                     // tempHolder1.iv_portrait.setImageBitmap(tempMessage.getPortrait());
                     tempLeftHolder.bubble_textview.setVisibility(View.VISIBLE);
                     tempLeftHolder.chat_left_bubble.setVisibility(View.GONE);
                     tempLeftHolder.tv_recorder_time_left.setVisibility(View.GONE);
                     //为Item设置监听所用
-                    tempLeftHolder.iv_portrait.setTag(position);
+                    //  tempLeftHolder.iv_portrait.setTag(position);
                     tempLeftHolder.bubble_textview.setText(tempMessage.getContent());
                 }else if (datas.get(position) instanceof VoiceMessageEntry){
                     VoiceMessageEntry tempMessage=(VoiceMessageEntry)datas.get(position);
                     tempLeftHolder.bubble_textview.setVisibility(View.GONE);
                     tempLeftHolder.chat_left_bubble.setVisibility(View.VISIBLE);
-                    JMessageClient.getUserInfo(tempMessage.getUserName(), new GetUserInfoCallback() {
-                        @Override
-                        public void gotResult(int i, String s, UserInfo userInfo) {
-                            userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
-                                @Override
-                                public void gotResult(int i, String s, Bitmap bitmap) {
-                                    tempLeftHolder.iv_portrait.setImageBitmap(bitmap);
-                                }
-                            });
-                        }
-                    });
-//                    tempHolder1.iv_portrait.setImageBitmap(tempMessage.getPortrait());
+                    //tempLeftHolder.iv_portrait.setImageBitmap(friendsPortrait);
+                    //tempLeftHolder.iv_portrait.setImageDrawable(friendsPortrait);
                     tempLeftHolder.tv_recorder_time_left.setText((int) tempMessage.getTime() + "");
-                    tempLeftHolder.iv_portrait.setTag(position);
+                    //tempLeftHolder.iv_portrait.setTag(position);
                 }
+            tempLeftHolder.iv_portrait.setImageDrawable(friendsPortrait);
+            tempLeftHolder.iv_portrait.setTag(position);
+
+
+
         }
     }
 

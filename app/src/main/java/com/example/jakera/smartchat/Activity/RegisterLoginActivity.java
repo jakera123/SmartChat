@@ -1,6 +1,7 @@
 package com.example.jakera.smartchat.Activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -22,7 +24,10 @@ import com.example.jakera.smartchat.SmartChatConstant;
 import com.example.jakera.smartchat.Utils.SharePreferenceUtils;
 import com.example.jakera.smartchat.Views.LoadingDialog;
 
+import java.io.File;
+
 import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.callback.GetAvatarBitmapCallback;
 import cn.jpush.im.api.BasicCallback;
 
 /**

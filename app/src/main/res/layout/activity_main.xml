@@ -52,12 +52,6 @@
             android:text="@string/rg_foot_btn02"
             />
 
-        <ImageButton
-            android:id="@+id/btn_voice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/voice"/>
-
         <RadioButton
             android:id="@+id/rb_foot_btn03"
             style="@style/RadioButtonStyle"
