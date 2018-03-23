@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jakera.smartchat.R;
+import com.example.jakera.smartchat.SmartChatApp;
 import com.example.jakera.smartchat.SmartChatConstant;
 import com.example.jakera.smartchat.Utils.SharePreferenceUtils;
 import com.example.jakera.smartchat.Views.LoadingDialog;
@@ -155,6 +156,7 @@ public class RegisterLoginActivity extends AppCompatActivity implements View.OnC
                                                 } else if (i == 0) {
                                                     SharePreferenceUtils.put(RegisterLoginActivity.this, SmartChatConstant.SPISLOGINKEY, true);
                                                     SharePreferenceUtils.put(RegisterLoginActivity.this, SmartChatConstant.SPUSERNAME, JMessageClient.getMyInfo().getUserName());
+                                                    SmartChatApp.USERNAME = JMessageClient.getMyInfo().getUserName();
                                                     Intent intent = new Intent(RegisterLoginActivity.this, MainActivity.class);
                                                     startActivity(intent);
                                                     RegisterLoginActivity.this.finish();

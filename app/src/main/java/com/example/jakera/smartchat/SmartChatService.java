@@ -23,6 +23,8 @@ import com.example.jakera.smartchat.Entry.VoiceMessageEntry;
 import com.example.jakera.smartchat.Utils.MySQLiteOpenHelper;
 import com.example.jakera.smartchat.Utils.TimeUtil;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +55,7 @@ public class SmartChatService extends Service {
     private MySQLiteOpenHelper mySQLiteOpenHelper;
     private List<MessageEntry> messageList = new ArrayList<>();
     private getMessageListener getMessage;
+    public boolean isLoadMessageListFromDB = false;
 
     public void setGetMessageListenr(getMessageListener listenr) {
         this.getMessage = listenr;
@@ -78,11 +81,21 @@ public class SmartChatService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+
     @Override
     public void onDestroy() {
+        saveMessageListToDB();
         Log.i(TAG, "我的服务，onDestroy");
         super.onDestroy();
         JMessageClient.unRegisterEventReceiver(this);
+    }
+
+    @Override
+    public boolean stopService(Intent name) {
+        Log.i(TAG, "我的服务，stop");
+        return super.stopService(name);
+
+
     }
 
     public void onEvent(NotificationClickEvent event) {
@@ -266,6 +279,7 @@ public class SmartChatService extends Service {
     //username content time
     public void saveMessageListToDB() {
         Log.i(TAG, "正在保存数据");
+        isLoadMessageListFromDB = true;
         SQLiteDatabase db = mySQLiteOpenHelper.getWritableDatabase();
         db.beginTransaction();
         db.delete(MySQLiteOpenHelper.TABLEMESSAGELIST, null, null);
@@ -293,7 +307,8 @@ public class SmartChatService extends Service {
         String sql = "select * from " + MySQLiteOpenHelper.TABLEMESSAGELIST;
         StringBuffer sb = new StringBuffer();
         Cursor cursor = db.rawQuery(sql, null);
-
+        //防止多次读入数据
+        messageList.clear();
         while (cursor.moveToNext()) {
             MessageEntry entry = new MessageEntry();
             entry.setUsername(cursor.getString(cursor.getColumnIndex("username")));

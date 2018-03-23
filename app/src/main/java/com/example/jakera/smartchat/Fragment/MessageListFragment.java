@@ -103,16 +103,11 @@ public class MessageListFragment extends Fragment implements ItemClickListener, 
     @Override
     public void onResume() {
         super.onResume();
-        if (smartChatService != null && smartChatService.getMessageList().size() > 0) {
-            datas.clear();
-            MessageEntry messageEntry = new MessageEntry();
-            messageEntry.setUsername(getString(R.string.app_name));
-            messageEntry.setNickname("我叫小智");
-            messageEntry.setContent("快来自言智语吧");
-            messageEntry.setTime("2018.3.9");
-            datas.add(messageEntry);
-            datas.addAll(smartChatService.getMessageList());
-            adapter.notifyDataSetChanged();
+        if (smartChatService != null && datas.size() < 2) {
+            List<MessageEntry> mesageEntries = smartChatService.getMessageList();
+            for (MessageEntry entry : mesageEntries) {
+                datas.add(entry);
+            }
         }
     }
 
@@ -140,6 +135,7 @@ public class MessageListFragment extends Fragment implements ItemClickListener, 
     @Override
     public void onPause() {
         super.onPause();
+        //不能在这里保存数据库，因为此时服务SmartChatService还没有停止，如果重复打开关闭fragement即会导致重复写入数据库操作，造成数据库混乱
         smartChatService.saveMessageListToDB();
     }
 
