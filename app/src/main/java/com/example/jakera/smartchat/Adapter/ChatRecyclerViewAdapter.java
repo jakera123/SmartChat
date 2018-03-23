@@ -1,5 +1,6 @@
 package com.example.jakera.smartchat.Adapter;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -20,6 +21,7 @@ import com.example.jakera.smartchat.Entry.VoiceMessageEntry;
 import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.SmartChatApp;
+import com.example.jakera.smartchat.SmartChatConstant;
 import com.example.jakera.smartchat.Views.BubbleLinearLayout;
 import com.example.jakera.smartchat.Views.BubbleTextView;
 
@@ -41,8 +43,10 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
     private ChatRecyclerViewAdapter.ChatMessageRightViewHolder tempRightHolder;
     private ChatRecyclerViewAdapter.ChatMessageLeftViewHolder tempLeftHolder;
     private Drawable myPortrait, friendsPortrait;
+    private Context context;
 
-    public ChatRecyclerViewAdapter(String username, String friendsusername) {
+    public ChatRecyclerViewAdapter(Context context, String username, String friendsusername) {
+
         JMessageClient.getUserInfo(username, new GetUserInfoCallback() {
             @Override
             public void gotResult(int i, String s, UserInfo userInfo) {
@@ -56,18 +60,23 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter {
             }
         });
 
-        JMessageClient.getUserInfo(friendsusername, new GetUserInfoCallback() {
-            @Override
-            public void gotResult(int i, String s, UserInfo userInfo) {
-                userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
-                    @Override
-                    public void gotResult(int i, String s, Bitmap bitmap) {
-                        friendsPortrait = new BitmapDrawable(bitmap);
-                        ChatRecyclerViewAdapter.this.notifyDataSetChanged();
-                    }
-                });
-            }
-        });
+        if (friendsusername.equals(SmartChatConstant.APPNAME)) {
+            friendsPortrait = context.getResources().getDrawable(R.mipmap.ic_launcher);
+            ChatRecyclerViewAdapter.this.notifyDataSetChanged();
+        } else {
+            JMessageClient.getUserInfo(friendsusername, new GetUserInfoCallback() {
+                @Override
+                public void gotResult(int i, String s, UserInfo userInfo) {
+                    userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
+                        @Override
+                        public void gotResult(int i, String s, Bitmap bitmap) {
+                            friendsPortrait = new BitmapDrawable(bitmap);
+                            ChatRecyclerViewAdapter.this.notifyDataSetChanged();
+                        }
+                    });
+                }
+            });
+        }
 
     }
 

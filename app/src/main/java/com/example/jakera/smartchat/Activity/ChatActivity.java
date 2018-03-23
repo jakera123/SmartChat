@@ -118,8 +118,6 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
     private boolean isChinese = true;
 
     private String friendUsername;
-    private UserInfo friendUserInfo;
-    private Bitmap frindPortrait;
 
     private Conversation conversation;
 
@@ -247,7 +245,7 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
         Log.i(TAG, "当前用户名为：" + SmartChatApp.USERNAME);
 
 
-        adapter = new ChatRecyclerViewAdapter(JMessageClient.getMyInfo().getUserName(), friendUsername);
+        adapter = new ChatRecyclerViewAdapter(this, JMessageClient.getMyInfo().getUserName(), friendUsername);
         adapter.setOnItemClickListener(this);
 
         datas=new ArrayList<>();
@@ -310,19 +308,6 @@ public class ChatActivity extends AppCompatActivity implements Callback, ItemCli
             }
         });
 
-
-        JMessageClient.getUserInfo(friendUsername, new GetUserInfoCallback() {
-            @Override
-            public void gotResult(int i, String s, UserInfo userInfo) {
-                friendUserInfo = userInfo;
-                userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
-                    @Override
-                    public void gotResult(int i, String s, Bitmap bitmap) {
-                        frindPortrait = bitmap;
-                    }
-                });
-            }
-        });
         speechRecognizer = SpeechRecognizer.createRecognizer(this, null);
         recognizerHelper = new RecognizerHelper(speechRecognizer);
         recognizerHelper.setVoiceToTextListener(this);
