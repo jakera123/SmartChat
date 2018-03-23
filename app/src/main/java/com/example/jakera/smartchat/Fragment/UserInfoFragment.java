@@ -2,9 +2,11 @@ package com.example.jakera.smartchat.Fragment;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import com.example.jakera.smartchat.Activity.UserInfoActivity;
 import com.example.jakera.smartchat.R;
 import com.example.jakera.smartchat.Utils.RecognizerHelper;
 import com.example.jakera.smartchat.Views.CircleImageView;
+import com.example.jakera.smartchat.Views.LoadingDialog;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.GetAvatarBitmapCallback;
@@ -34,7 +37,6 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
     private String TAG = "UserInfoFragment";
     private View layout;
     private UserInfo userInfo;
-    private LoadUserInfo loadUserInfo;
     public UserInfoFragment() {
     }
 
@@ -52,8 +54,6 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
         iv_modify_user_info.setOnClickListener(this);
         tv_userinfo_username = (TextView) layout.findViewById(R.id.tv_userinfo_username);
         civ_user_portrait = (CircleImageView) layout.findViewById(R.id.civ_user_portrait);
-        loadUserInfo = new LoadUserInfo();
-        loadUserInfo.start();
         tv_fregment_userinfo_signature = (TextView) layout.findViewById(R.id.tv_fregment_userinfo_signature);
         tv_recognize_car = (TextView) layout.findViewById(R.id.tv_recognize_car);
         tv_recognize_car.setOnClickListener(this);
@@ -65,10 +65,6 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
         tv_recognize_food.setOnClickListener(this);
         tv_contact_author = (TextView) layout.findViewById(R.id.tv_contact_author);
         tv_contact_author.setOnClickListener(this);
-//        if (userInfo!=null){
-//            tv_userinfo_username.setText(userInfo.getUserName());
-//        }
-        // ((MainActivity)getActivity()).setTitlebar(this);
     }
 
 
@@ -116,45 +112,19 @@ public class UserInfoFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
 
+        userInfo = JMessageClient.getMyInfo();
+        tv_userinfo_username.setText(userInfo.getUserName() + ":" + userInfo.getNickname());
+        userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
+            @Override
+            public void gotResult(int i, String s, Bitmap bitmap) {
+                civ_user_portrait.setImageBitmap(bitmap);
+            }
+        });
+        tv_fregment_userinfo_signature.setText(userInfo.getSignature());
+
+
     }
 
-    class LoadUserInfo extends Thread {
-        @Override
-        public void run() {
-            while (userInfo == null) {
-                userInfo = JMessageClient.getMyInfo();
-                try {
-                    Thread.sleep(1000);
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (userInfo == null) {
-                                Toast.makeText(getContext(), getResources().getString(R.string.fail_get_userinfo), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (userInfo != null) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tv_userinfo_username.setText(userInfo.getUserName() + ":" + userInfo.getNickname());
-                        userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
-                            @Override
-                            public void gotResult(int i, String s, Bitmap bitmap) {
-                                civ_user_portrait.setImageBitmap(bitmap);
-                            }
-                        });
-                        tv_fregment_userinfo_signature.setText(userInfo.getSignature());
-
-                    }
-                });
-            }
-        }
-    }
 
     @Override
     public void onDestroy() {
