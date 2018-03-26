@@ -6,8 +6,8 @@
     android:orientation="horizontal">
     <ImageView
         android:id="@+id/iv_chat_left_portrait"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_margin="10dp"
         android:src="@drawable/robot_portrait"/>
     <com.example.jakera.smartchat.Views.BubbleTextView
@@ -32,7 +32,7 @@
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:layout_marginTop="20dp"
-        app:bubbleColor="#04ca04"
+        app:bubbleColor="#ff4444"
         app:arrowLocation="left"
         app:arrowWidth="8dp"
         app:angle="5dp"
@@ -45,24 +45,24 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:background="@mipmap/chat_sound_left"
+            android:paddingVertical="10dp"
             android:layout_marginLeft="10dp"
             android:backgroundTint="#d2666466"
             android:layout_gravity="center_vertical"
 
             />
 
-        <TextView
-            android:id="@+id/id_recorder_time_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
-            android:text=""
-            android:textColor="#ff777777"/>
 
     </com.example.jakera.smartchat.Views.BubbleLinearLayout>
 
-
+    <TextView
+        android:id="@+id/id_recorder_time_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="30dp"
+        android:text=""
+        android:textColor="#ff777777" />
 
 
 </LinearLayout>

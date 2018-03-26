@@ -1,11 +1,18 @@
 package com.example.jakera.smartchat.Activity;
 
+import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,19 +29,38 @@ import android.widget.TextView;
 
 import com.example.jakera.smartchat.Adapter.ChatRecyclerViewAdapter;
 import com.example.jakera.smartchat.Entry.BaseMessageEntry;
+import com.example.jakera.smartchat.Entry.MessageEntry;
 import com.example.jakera.smartchat.Entry.TextMessageEntry;
 import com.example.jakera.smartchat.Entry.VoiceMessageEntry;
+import com.example.jakera.smartchat.Fragment.MessageListFragment;
 import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
+import com.example.jakera.smartchat.SmartChatApp;
+import com.example.jakera.smartchat.SmartChatConstant;
+import com.example.jakera.smartchat.SmartChatService;
+import com.example.jakera.smartchat.Utils.DeleteFileUtil;
 import com.example.jakera.smartchat.Utils.MediaManager;
+import com.example.jakera.smartchat.Utils.MySQLiteOpenHelper;
 import com.example.jakera.smartchat.Utils.OkhttpHelper;
+import com.example.jakera.smartchat.Utils.RecognizerHelper;
 import com.example.jakera.smartchat.Utils.SpeechSynthesizerUtil;
 import com.example.jakera.smartchat.Utils.TranslateUtil;
 import com.example.jakera.smartchat.Views.AudioRecorderButton;
+import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
+import com.iflytek.cloud.RecognizerResult;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechError;
+import com.iflytek.cloud.SpeechRecognizer;
+import com.iflytek.cloud.ui.RecognizerDialog;
+import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.youdao.sdk.ydtranslate.Translate;
 import com.youdao.sdk.ydtranslate.TranslateErrorCode;
 import com.youdao.sdk.ydtranslate.TranslateListener;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +77,7 @@ import cn.jpush.im.android.api.content.TextContent;
 import cn.jpush.im.android.api.content.VoiceContent;
 import cn.jpush.im.android.api.event.ConversationRefreshEvent;
 import cn.jpush.im.android.api.event.MessageEvent;
+import cn.jpush.im.android.api.event.NotificationClickEvent;
 import cn.jpush.im.android.api.event.OfflineMessageEvent;
 import cn.jpush.im.android.api.exceptions.JMFileSizeExceedException;
 import cn.jpush.im.android.api.model.Conversation;
@@ -61,17 +88,19 @@ import cn.jpush.im.android.tasks.GetEventNotificationTaskMng;
 import cn.jpush.im.api.BasicCallback;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.Response;
 
 /**
  * Created by jakera on 18-2-1.
  */
 
-public class ChatActivity extends AppCompatActivity implements Callback,ItemClickListener{
+public class ChatActivity extends AppCompatActivity implements Callback, ItemClickListener, RecognizerHelper.getVoiceToTextResult {
 
     private String TAG="ChatActivity";
 
     private RecyclerView recyclerView;
+    //防止在不同线程
     private List<BaseMessageEntry> datas;
     private ChatRecyclerViewAdapter adapter;
 
@@ -89,8 +118,6 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
     private boolean isChinese = true;
 
     private String friendUsername;
-    private UserInfo friendUserInfo;
-    private Bitmap frindPortrait;
 
     private Conversation conversation;
 
@@ -99,6 +126,16 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
 
     private TextView tv_title_bar_center;
     private ImageView iv_title_bar_back;
+
+    private RecognizerHelper recognizerHelper;
+    private SpeechRecognizer speechRecognizer;
+
+    private int clickPosition;
+
+    private MySQLiteOpenHelper mySQLiteOpenHelper;
+
+
+    private FFmpeg fFmpeg;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,62 +150,34 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
         window.setStatusBarColor(Color.BLACK);
         getSupportActionBar().hide();
 
-
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("username");
         friendUsername = bundle.getString("username");
         setContentView(R.layout.activity_chat);
 
+
+        initAudio();
+        sendMessage();
         init();
-        mAudioRecorderButton=(AudioRecorderButton)findViewById(R.id.id_recorder_button);
-        mAudioRecorderButton.setAudioFinishRecorderListener(new AudioRecorderButton.AudioFinishRecorderListener() {
-            @Override
-            public void onFinish(float seconds, String filePath) {
-                VoiceMessageEntry voiceMessageEntry=new VoiceMessageEntry(seconds,filePath);
-                Log.i(TAG,filePath);
-                voiceMessageEntry.setPortrait(BitmapFactory.decodeResource(getResources(),R.mipmap.icon));
-                voiceMessageEntry.setViewType(BaseMessageEntry.SENDMESSAGE);
-                datas.add(voiceMessageEntry);
-                adapter.notifyDataSetChanged();
-                recyclerView.scrollToPosition(datas.size()-1);
-            }
-        });
-        recyclerView=(RecyclerView)findViewById(R.id.recyclerview_chat);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter=new ChatRecyclerViewAdapter();
-        adapter.setOnItemClickListener(this);
 
-        datas=new ArrayList<>();
+    }
 
-        okhttpHelper=new OkhttpHelper();
-        okhttpHelper.setCallback(this);
-
-        TextMessageEntry messageEntry0=new TextMessageEntry();
-        messageEntry0.setPortrait(BitmapFactory.decodeResource(getResources(),R.drawable.robot_portrait));
-        messageEntry0.setContent("嗨，我是小智，来和我聊天吧！！！");
-        messageEntry0.setViewType(TextMessageEntry.RECEIVEMESSAGE);
-
-        et_input_text=(EditText)findViewById(R.id.et_input_text);
-        tv_send=(TextView)findViewById(R.id.tv_send);
+    private void sendMessage() {
+        tv_send = (TextView) findViewById(R.id.tv_send);
         tv_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final TextMessageEntry messageEntry = new TextMessageEntry();
-                JMessageClient.getMyInfo().getAvatarBitmap(new GetAvatarBitmapCallback() {
-                    @Override
-                    public void gotResult(int i, String s, Bitmap bitmap) {
-                        messageEntry.setPortrait(bitmap);
-                    }
-                });
+                messageEntry.setUserName(JMessageClient.getMyInfo().getUserName());
                 // messageEntry.setPortrait(BitmapFactory.decodeResource(getResources(),R.mipmap.icon));
                 messageEntry.setContent(et_input_text.getText().toString());
-                if (friendUsername.equals(getString(R.string.app_name))) {
+                if (friendUsername.equals(SmartChatConstant.APPNAME)) {
                     okhttpHelper.postToTuLingRobot(et_input_text.getText().toString(), "123456");
                 }
                 messageEntry.setViewType(TextMessageEntry.SENDMESSAGE);
                 datas.add(messageEntry);
                 adapter.notifyDataSetChanged();
-                recyclerView.scrollToPosition(datas.size()-1);
+                recyclerView.scrollToPosition(datas.size() - 1);
 
 
                 // JMessageClient.createSingleTextMessage("mary",null,"你好啊");
@@ -192,6 +201,60 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
 
             }
         });
+    }
+
+    private void initAudio() {
+
+        mAudioRecorderButton=(AudioRecorderButton)findViewById(R.id.id_recorder_button);
+        mAudioRecorderButton.setAudioFinishRecorderListener(new AudioRecorderButton.AudioFinishRecorderListener() {
+            @Override
+            public void onFinish(float seconds, String filePath) {
+                VoiceMessageEntry voiceMessageEntry=new VoiceMessageEntry(seconds,filePath);
+                Log.i(TAG,filePath);
+                voiceMessageEntry.setUserName(JMessageClient.getMyInfo().getUserName());
+                voiceMessageEntry.setViewType(BaseMessageEntry.SENDMESSAGE);
+                try {
+                    Message voiceMessage = JMessageClient.createSingleVoiceMessage(friendUsername, null, new File(filePath), (int) seconds);
+                    voiceMessage.setOnSendCompleteCallback(new BasicCallback() {
+                        @Override
+                        public void gotResult(int i, String s) {
+                            if (i == 0) {
+                                Log.i(TAG, "发送语音成功");
+                            }
+                        }
+                    });
+                    JMessageClient.sendMessage(voiceMessage);
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                datas.add(voiceMessageEntry);
+                adapter.notifyDataSetChanged();
+                recyclerView.scrollToPosition(datas.size()-1);
+            }
+        });
+
+    }
+
+    public void init() {
+
+
+        recyclerView=(RecyclerView)findViewById(R.id.recyclerview_chat);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        Log.i(TAG, "当前用户名为：" + SmartChatApp.USERNAME);
+
+
+        adapter = new ChatRecyclerViewAdapter(this, JMessageClient.getMyInfo().getUserName(), friendUsername);
+        adapter.setOnItemClickListener(this);
+
+        datas=new ArrayList<>();
+
+        okhttpHelper=new OkhttpHelper();
+        okhttpHelper.setCallback(this);
+
+
+        et_input_text=(EditText)findViewById(R.id.et_input_text);
 
 
         btn_voice_chat=(ImageButton)findViewById(R.id.btn_voice_chat);
@@ -226,16 +289,12 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
                 }
             }
         });
-        if (friendUsername.equals(getString(R.string.app_name))) {
-            datas.add(messageEntry0);
-        }
 
 
         adapter.setDatas(datas);
         recyclerView.setAdapter(adapter);
-    }
 
-    public void init() {
+
         //创建跨应用会话
         conversation = Conversation.createSingleConversation(friendUsername, null);
         tv_title_bar_center = (TextView) findViewById(R.id.tv_title_bar_center);
@@ -249,19 +308,39 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
             }
         });
 
+        speechRecognizer = SpeechRecognizer.createRecognizer(this, null);
+        recognizerHelper = new RecognizerHelper(speechRecognizer);
+        recognizerHelper.setVoiceToTextListener(this);
 
-        JMessageClient.getUserInfo(friendUsername, new GetUserInfoCallback() {
-            @Override
-            public void gotResult(int i, String s, UserInfo userInfo) {
-                friendUserInfo = userInfo;
-                userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
-                    @Override
-                    public void gotResult(int i, String s, Bitmap bitmap) {
-                        frindPortrait = bitmap;
-                    }
-                });
+        String sql = "create table if not exists " + friendUsername + " (type integer,username text,content text,RecOrSend integer,VoiceTime real,VoicePath text)";
+        mySQLiteOpenHelper = new MySQLiteOpenHelper(this);
+        SQLiteDatabase db = mySQLiteOpenHelper.getWritableDatabase();
+        db.execSQL(sql);
+        String sql2 = "select * from " + friendUsername;
+        Cursor cursor = db.rawQuery(sql2, null);
+        while (cursor.moveToNext()) {
+            int MessageType = cursor.getInt(cursor.getColumnIndex("type"));
+            if (MessageType == MySQLiteOpenHelper.MessageTextType) {
+                TextMessageEntry messageEntry = new TextMessageEntry();
+                messageEntry.setUserName(cursor.getString(cursor.getColumnIndex("username")));
+                messageEntry.setContent(cursor.getString(cursor.getColumnIndex("content")));
+                messageEntry.setViewType(cursor.getInt(cursor.getColumnIndex("RecOrSend")));
+                datas.add(messageEntry);
+            } else if (MessageType == MySQLiteOpenHelper.MessageVoiceType) {
+                float seconds = cursor.getFloat(cursor.getColumnIndex("VoiceTime"));
+                String filePath = cursor.getString(cursor.getColumnIndex("VoicePath"));
+                VoiceMessageEntry voiceMessageEntry = new VoiceMessageEntry(seconds, filePath);
+                Log.i(TAG, filePath);
+                voiceMessageEntry.setUserName(cursor.getString(cursor.getColumnIndex("username")));
+                voiceMessageEntry.setViewType(cursor.getInt(cursor.getColumnIndex("RecOrSend")));
+                datas.add(voiceMessageEntry);
             }
-        });
+        }
+        adapter.notifyDataSetChanged();
+        recyclerView.scrollToPosition(datas.size() - 1);
+        db.close();
+
+        fFmpeg = FFmpeg.getInstance(this);
 
     }
 
@@ -274,7 +353,7 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
     public void onResponse(Call call, Response response) throws IOException {
         String answer=response.body().string();
         TextMessageEntry messageEntry=new TextMessageEntry();
-        messageEntry.setPortrait(BitmapFactory.decodeResource(getResources(),R.drawable.robot_portrait));
+        messageEntry.setUserName(friendUsername);
         messageEntry.setContent(okhttpHelper.parseTuLingResult(answer));
         messageEntry.setViewType(TextMessageEntry.RECEIVEMESSAGE);
         datas.add(messageEntry);
@@ -303,15 +382,117 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         MediaManager.release();
+        SQLiteDatabase db = mySQLiteOpenHelper.getWritableDatabase();
+        db.beginTransaction();
+        db.delete(friendUsername, null, null);
+        for (BaseMessageEntry entry : datas) {
+            ContentValues contentValues = new ContentValues();
+            if (entry instanceof VoiceMessageEntry) {
+                contentValues.put("type", MySQLiteOpenHelper.MessageVoiceType);
+                contentValues.put("username", entry.getUserName());
+                contentValues.put("RecOrSend", entry.getViewType());
+                contentValues.put("VoicePath", ((VoiceMessageEntry) entry).getFilePath());
+                contentValues.put("VoiceTime", ((VoiceMessageEntry) entry).getTime());
+            } else if (entry instanceof TextMessageEntry) {
+                contentValues.put("type", MySQLiteOpenHelper.MessageTextType);
+                contentValues.put("username", entry.getUserName());
+                contentValues.put("RecOrSend", entry.getViewType());
+                contentValues.put("content", ((TextMessageEntry) entry).getContent());
+            }
+            db.insertOrThrow(friendUsername, null, contentValues);
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
     }
 
     @Override
     public void OnItemClick(View v, final int position) {
         if(datas.get(position) instanceof VoiceMessageEntry){
             MediaManager.playSound(((VoiceMessageEntry) datas.get(position)).getFilePath(),null);
+            clickPosition = position;
+            if (((VoiceMessageEntry) datas.get(position)).getViewType() == VoiceMessageEntry.RECEIVEMESSAGE) {
+                //((VoiceMessageEntry) datas.get(position)).getFilePath()
+
+                DeleteFileUtil.deleteFile(getCacheDir() + "/receiverReconizer.wav");
+                try {
+
+                    /**
+                     * ffmpeg -i INPUT -ac CHANNELS -ar FREQUENCY -acodec PCMFORMAT OUTPUT
+
+                     INPUT : mp3文件,假如音频流没有任何的声音也会导致转换失败。
+
+                     CHANNELS ：值得选项为1和2
+
+                     PCMFORMAT ：值得选项为pcm_u8，pcm_s16le ，pcm_s16be，pcm_u16le，pcm_u16be
+
+                     FREQUENCY ：8000，11025 ，22050，44100
+
+                     例如：ffmpeg -i F:\test\dizi.mp3 -ar 44100 -ac 1 -acodec pcm_u8 F:\test\dizi.wav
+
+                     输出44100采样率，1个声道，8bits的wav文件  注意查看log，找出转换失败的原因
+                     */
+                    String[] commands = new String[9];
+                    commands[0] = "-i";
+                    commands[1] = ((VoiceMessageEntry) datas.get(position)).getFilePath();
+                    commands[2] = "-ac";
+                    commands[3] = "1";
+                    commands[4] = "-ar";
+                    //改为16KHZ的识别率高很多,官方是指定8K和16K
+                    commands[5] = "22050";
+                    commands[6] = "-acodec";
+                    //四种格式仅仅只有这种可以
+                    commands[7] = "pcm_s16le";
+                    commands[8] = getCacheDir() + "/receiverReconizer.wav";
+                    fFmpeg.execute(commands, new ExecuteBinaryResponseHandler() {
+                        @Override
+                        public void onSuccess(String message) {
+                            super.onSuccess(message);
+                            Log.i(TAG, "执行ffmpeg成功：" + message);
+                            recognizerHelper.recognizeStream(getCacheDir() + "/receiverReconizer.wav");
+                        }
+
+                        @Override
+                        public void onProgress(String message) {
+                            super.onProgress(message);
+                            Log.i(TAG, "正在执行ffmpeg：" + message);
+                        }
+
+                        @Override
+                        public void onFailure(String message) {
+                            super.onFailure(message);
+                            Log.i(TAG, "执行ffmpeg失败：" + message);
+                        }
+
+                        @Override
+                        public void onStart() {
+                            super.onStart();
+                            Log.i(TAG, "开始执行ffmpeg");
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            super.onFinish();
+                            Log.i(TAG, "执行ffmpeg完成");
+                        }
+                    });
+                } catch (FFmpegCommandAlreadyRunningException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                recognizerHelper.recognizerFromAmr(((VoiceMessageEntry) datas.get(position)).getFilePath());
+
+            }
+
         } else if (datas.get(position) instanceof TextMessageEntry) {
             String fromLanguage, toLanguage;
             if (isChinese) {
@@ -348,7 +529,7 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
 
     //不同的Event接收不用的实体对象,同时在线
     public void onEvent(MessageEvent event) {
-        Message msg = event.getMessage();
+        final Message msg = event.getMessage();
         UserInfo freind = msg.getFromUser();
         String username_receiver = freind.getUserName();
         Log.i(TAG, "onEvent:接到事件");
@@ -366,7 +547,7 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
                         public void run() {
                             TextMessageEntry messageEntry = new TextMessageEntry();
 
-                            messageEntry.setPortrait(frindPortrait);
+                            messageEntry.setUserName(friendUsername);
                             messageEntry.setContent(receiver_text);
                             messageEntry.setViewType(TextMessageEntry.RECEIVEMESSAGE);
                             datas.add(messageEntry);
@@ -387,9 +568,23 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
                 break;
             case voice:
                 //处理语音消息
+//                voiceContent.getLocalPath();//语音文件本地地址
+//                voiceContent.getDuration();//语音文件时长
                 VoiceContent voiceContent = (VoiceContent) msg.getContent();
-                voiceContent.getLocalPath();//语音文件本地地址
-                voiceContent.getDuration();//语音文件时长
+                final VoiceMessageEntry voiceMessageEntry = new VoiceMessageEntry(voiceContent.getDuration(), voiceContent.getLocalPath());
+                Log.i(TAG, "接到语音信息" + voiceContent.getLocalPath());
+                voiceMessageEntry.setUserName(friendUsername);
+                voiceMessageEntry.setViewType(BaseMessageEntry.RECEIVEMESSAGE);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+
+                        datas.add(voiceMessageEntry);
+                        adapter.notifyDataSetChanged();
+                        recyclerView.scrollToPosition(datas.size() - 1);
+                    }
+                });
                 break;
             case custom:
                 //处理自定义消息
@@ -463,5 +658,21 @@ public class ChatActivity extends AppCompatActivity implements Callback,ItemClic
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    @Override
+    public void getRecognizeResult(String result) {
+        VoiceMessageEntry entry = (VoiceMessageEntry) datas.get(clickPosition);
+        final TextMessageEntry messageEntry = new TextMessageEntry();
+        messageEntry.setUserName(entry.getUserName());
+        if (result.length() <= 1) {
+            return;
+        } else {
+            messageEntry.setContent(result);
+        }
+        messageEntry.setViewType(entry.getViewType());
+        datas.add(clickPosition + 1, messageEntry);
+        adapter.notifyDataSetChanged();
+        recyclerView.scrollToPosition(datas.size() - 1);
     }
 }

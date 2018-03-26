@@ -47,7 +47,7 @@ public class AudioRecorderButton extends Button implements AudioManager.AudioSta
         super(context, attrs);
         mDialogManager = new DialogManager(getContext());
 
-        String dir =Environment.getExternalStorageDirectory()+"/smart_chat_recorder_audios";
+        String dir = getContext().getCacheDir().getPath();
         mAudioManager = AudioManager.getInstance(dir);
         mAudioManager.setOnAudioStateListener(this);
 

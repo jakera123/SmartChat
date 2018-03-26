@@ -64,6 +64,8 @@
         <activity android:name=".Activity.RegisterLoginActivity" />
         <activity android:name=".Activity.ModifyPortraitActivity" />
         <activity android:name=".Activity.CropPortraitAcitivity" />
+        <activity android:name=".Activity.RecognizerActivity" />
+        <activity android:name=".Activity.ContactAuthorActivity" />
         <activity android:name=".Activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -159,6 +161,7 @@
             android:name="cn.jpush.android.service.DownloadService"
             android:enabled="true"
             android:exported="false"></service>
+        <service android:name=".SmartChatService" />
 
         <!-- User defined.  For test only  用户自定义的广播接收器-->
         <receiver

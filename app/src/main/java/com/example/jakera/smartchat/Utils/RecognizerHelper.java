@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 
+import com.example.jakera.smartchat.Entry.AnimalOrPlant;
+import com.example.jakera.smartchat.Entry.Car;
+import com.example.jakera.smartchat.Entry.Dish;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.RecognizerListener;
 import com.iflytek.cloud.RecognizerResult;
@@ -19,6 +22,8 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.File;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -35,12 +40,22 @@ public class RecognizerHelper {
     private SpeechRecognizer mSpeechRecognizer;
     private RecognizerDialog mRecognizerDialog;
     private RecognizerDialogListener mRListener;
+    private AudioDecode audioDecode;
+
+    public final static String type = "type";
+    public final static int CAR = 0;
+    public final static int ANIMAL = 1;
+    public final static int PLANT = 2;
+    public final static int FOOD = 3;
+
 
     private String TAG="RecognizerHelper";
 
     private int re_number;
 
     private Context context;
+
+    private MyRecognizerListener myRecognizerListener;
 
 
     public RecognizerHelper(Context context,SpeechRecognizer speechRecognizer,RecognizerDialog recognizerDialog) {
@@ -49,11 +64,22 @@ public class RecognizerHelper {
         this.mRecognizerDialog=recognizerDialog;
     }
 
+    public RecognizerHelper(SpeechRecognizer speechRecognizer) {
+        this.mSpeechRecognizer = speechRecognizer;
+        myRecognizerListener = new MyRecognizerListener();
+    }
+
     public void setListener(RecognizerDialogListener listener){
         this.mRecognizerDialog.setListener(listener);
     }
 
+    public void setVoiceToTextListener(getVoiceToTextResult listener) {
+        this.myRecognizerListener.setListener(listener);
+    }
 
+    public interface getVoiceToTextResult {
+        void getRecognizeResult(String result);
+    }
 
     public void startSpeechRecognizer(){
         setIatParam();
@@ -88,13 +114,17 @@ public class RecognizerHelper {
         mRecognizerDialog.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageState()+"/smart_chat_recorder_audios/"+generateFileName()+".wav");
     }
 
-
+    /**
+     * {"sn":1,"ls":false,"bg":0,"ed":0,"ws":[{"bg":0,"cw":[{"sc":0.00,"w":"今天"}]},{"bg":0,"cw":[{"sc":0.00,"w":"天气"}]},{"bg":0,"cw":[{"sc":0.00,"w":"好"}]},{"bg":0,"cw":[{"sc":0.00,"w":"吗"}]}]}
+     *
+     * @param json
+     * @return
+     */
     public static String parseIatResult(String json){
         StringBuffer ret=new StringBuffer();
         try {
             JSONTokener tokener = new JSONTokener(json);
             JSONObject joResult = new JSONObject(tokener);
-
             JSONArray words = joResult.getJSONArray("ws");
             for (int i = 0; i < words.length(); i++) {
                 // 转写结果词，默认使用第一个结果
@@ -115,7 +145,7 @@ public class RecognizerHelper {
 
     public void recognizeStream(String filename){
         mSpeechRecognizer.setParameter(SpeechConstant.AUDIO_SOURCE, "-1");
-        re_number=mSpeechRecognizer.startListening(mRecognizerListener);
+        re_number = mSpeechRecognizer.startListening(myRecognizerListener);
         if (re_number!= ErrorCode.SUCCESS){
             Log.i(TAG,"fail to recognizer.....");
         }else {
@@ -139,19 +169,69 @@ public class RecognizerHelper {
 
     }
 
+    //参考科大迅飞Demo   https://github.com/leoleohan/Voice2Txt
+    public void recognizerFromAmr(String path) {
 
-    public void recognizeStreamFromPath(String filePath) {
+        try {
+
+            mSpeechRecognizer.setParameter(SpeechConstant.AUDIO_SOURCE, "-1");
+            //记得在录制时也要设置好采样率
+            mSpeechRecognizer.setParameter(SpeechConstant.SAMPLE_RATE, "8000");
+            mSpeechRecognizer.setParameter(SpeechConstant.ASR_AUDIO_PATH, path);
+
+            audioDecode = AudioDecode.newInstance();
+
+            File file = new File(path);
+            Log.i(TAG, path);
+            if (file.exists()) {
+                Log.i(TAG, "file exists.");
+            } else {
+                Log.w(TAG, "file not exists!!!");
+                return;
+            }
+
+            audioDecode.prepare(path);
+            audioDecode.setOnCompleteListener(new AudioDecode.OnCompleteListener() {
+                @Override
+                public void completed(final ArrayList<byte[]> pcmData) {
+                    re_number = mSpeechRecognizer.startListening(myRecognizerListener);
+                    if (re_number != ErrorCode.SUCCESS) {
+                        Log.i(TAG, "fail to recognizer.....");
+                    } else {
+                        Log.i(TAG, "recognizer......");
+                        for (byte[] data : pcmData) {
+                            final ArrayList<byte[]> buffers = RecognizerUtil.splitBuffer(data, data.length, 4800);
+                            for (byte[] buffer : buffers) {
+                                Log.i(TAG, "正在转码");
+                                mSpeechRecognizer.writeAudio(buffer, 0, buffer.length);
+                            }
+                        }
+                        mSpeechRecognizer.stopListening();
+                    }
+                    audioDecode.release();
+                }
+            });
+            audioDecode.startAsync();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }
 
 
 
-
     /**
      * 听写监听器
      */
-    private RecognizerListener mRecognizerListener=new RecognizerListener() {
+    private class MyRecognizerListener implements RecognizerListener {
+
+        private getVoiceToTextResult listener;
+
+        public void setListener(getVoiceToTextResult listener) {
+            this.listener = listener;
+        }
         @Override
         public void onVolumeChanged(int i, byte[] bytes) {
             Log.i(TAG,"you are talking now,and the  volume is:"+i);
@@ -169,7 +249,8 @@ public class RecognizerHelper {
 
         @Override
         public void onResult(RecognizerResult recognizerResult, boolean b) {
-            Log.i(TAG,recognizerResult.getResultString());
+            String result = parseIatResult(recognizerResult.getResultString());
+            listener.getRecognizeResult(result);
         }
 
         @Override
@@ -192,5 +273,146 @@ public class RecognizerHelper {
         // TODO Auto-generated method stub
         return UUID.randomUUID().toString();
     }
+
+
+    /**
+     * 百度识别接口
+     *
+     * @param filePath 待识别图片
+     * @return
+     */
+    public static void carRecognize(String filePath, CarRecognizeListener listener) {
+        // 请求url
+        String url = "https://aip.baidubce.com/rest/2.0/image-classify/v1/car";
+        try {
+            // 本地文件路径
+//            String filePath = "[本地文件路径]";
+            byte[] imgData = BaiduFileUtil.readFileByBytes(filePath);
+            String imgStr = Base64Util.encode(imgData);
+            String imgParam = URLEncoder.encode(imgStr, "UTF-8");
+
+            String param = "image=" + imgParam + "&top_num=" + 5;
+
+            // 注意这里仅为了简化编码每一次请求都去获取access_token，线上环境access_token有过期时间， 客户端可自行缓存，过期后重新获取。
+            String accessToken = BaiduAuthService.getAuth();
+
+            String result = HttpUtil.post(url, accessToken, param);
+            Car car = new Car();
+            car = GsonUtils.fromJson(result, Car.class);
+            listener.onSuccess(car);
+            // Log.i("车型识别",car.result.get(0).score+car.result.get(0).name+car.color_result);
+            //System.out.println(result);
+            //03-09 20:32:28.111 31568-32355/com.example.jakera.smartchat I/System.out: {"log_id": 1961208421427382323, "result": [{"score": 0.9966436624527, "name": "兰博基尼Aventador", "year": "2007"}, {"score": 0.0014182010199875, "name": "三菱Endeavor", "year": "2013"}, {"score": 0.00065424933563918, "name": "兰博基尼Murcielago", "year": "2004-2010"}, {"score": 0.00056240992853418, "name": "兰博基尼Reventon", "year": "无年份信息"}, {"score": 0.00025521276984364, "name": "兰博基尼Huracan", "year": "2015"}], "color_result": "蓝色"}
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public interface CarRecognizeListener {
+        public void onSuccess(Car car);
+    }
+
+
+    /**
+     * 动物识别
+     */
+
+    public static void animalRecognize(String filePath, AnimalOrPlantRecognizeListener listener) {
+        // 请求url
+        String url = "https://aip.baidubce.com/rest/2.0/image-classify/v1/animal";
+        try {
+            byte[] imgData = BaiduFileUtil.readFileByBytes(filePath);
+            String imgStr = Base64Util.encode(imgData);
+            String imgParam = URLEncoder.encode(imgStr, "UTF-8");
+
+            String param = "image=" + imgParam + "&top_num=" + 6;
+
+            // 注意这里仅为了简化编码每一次请求都去获取access_token，线上环境access_token有过期时间， 客户端可自行缓存，过期后重新获取。
+            String accessToken = BaiduAuthService.getAuth();
+
+            String result = HttpUtil.post(url, accessToken, param);
+            AnimalOrPlant animalOrPlant = new AnimalOrPlant();
+            animalOrPlant = GsonUtils.fromJson(result, AnimalOrPlant.class);
+            listener.onSuccess(animalOrPlant);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public interface AnimalOrPlantRecognizeListener {
+        public void onSuccess(AnimalOrPlant animalOrPlant);
+    }
+
+    /**
+     * 植物识别
+     *
+     * @param filePath
+     * @param listener
+     */
+    public static void plantRecognize(String filePath, AnimalOrPlantRecognizeListener listener) {
+        // 请求url
+        String url = "https://aip.baidubce.com/rest/2.0/image-classify/v1/plant";
+        try {
+            byte[] imgData = BaiduFileUtil.readFileByBytes(filePath);
+            String imgStr = Base64Util.encode(imgData);
+            String imgParam = URLEncoder.encode(imgStr, "UTF-8");
+
+            String param = "image=" + imgParam;
+
+            // 注意这里仅为了简化编码每一次请求都去获取access_token，线上环境access_token有过期时间， 客户端可自行缓存，过期后重新获取。
+            String accessToken = BaiduAuthService.getAuth();
+
+            String result = HttpUtil.post(url, accessToken, param);
+            AnimalOrPlant animalOrPlant = new AnimalOrPlant();
+            animalOrPlant = GsonUtils.fromJson(result, AnimalOrPlant.class);
+            listener.onSuccess(animalOrPlant);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 菜品识别
+     *
+     * @param filePath
+     * @return 03-13 14:29:43.360 18891-24920/com.example.jakera.smartchat I/System.out: {"log_id": 3368823822981853804, "result_num": 1, "result": [{"calorie": "0", "has_calorie": true, "name": "非菜", "probability": "0.670065"}]}
+     */
+    public static void dishRecognize(String filePath, DishRecognizeListener listener) {
+        // 请求url
+        String url = "https://aip.baidubce.com/rest/2.0/image-classify/v2/dish";
+        try {
+
+            byte[] imgData = BaiduFileUtil.readFileByBytes(filePath);
+            String imgStr = Base64Util.encode(imgData);
+            String imgParam = URLEncoder.encode(imgStr, "UTF-8");
+
+            String param = "image=" + imgParam + "&top_num=" + 5;
+
+            // 注意这里仅为了简化编码每一次请求都去获取access_token，线上环境access_token有过期时间， 客户端可自行缓存，过期后重新获取。
+            String accessToken = BaiduAuthService.getAuth();
+
+            String result = HttpUtil.post(url, accessToken, param);
+
+            Dish dish = new Dish();
+            dish = GsonUtils.fromJson(result, Dish.class);
+            listener.onSuccess(dish);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public interface DishRecognizeListener {
+        public void onSuccess(Dish dish);
+    }
+
+
+
+
+
+
+
+
 
 }

@@ -9,7 +9,7 @@ import android.graphics.Bitmap;
 public class BaseMessageEntry {
     public final static int SENDMESSAGE=0;
     public final static int RECEIVEMESSAGE=1;
-    private Bitmap portrait;
+    private String userName;
     private int viewType=1;
 
     public int getViewType() {
@@ -20,11 +20,11 @@ public class BaseMessageEntry {
         this.viewType = viewType;
     }
 
-    public void setPortrait(Bitmap portrait) {
-        this.portrait = portrait;
+    public String getUserName() {
+        return userName;
     }
-    public Bitmap getPortrait() {
 
-        return portrait;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

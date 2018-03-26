@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -77,6 +78,11 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         relate_userinfo_signature = (RelativeLayout) findViewById(R.id.relate_userinfo_signature);
         relate_userinfo_signature.setOnClickListener(this);
         iv_user_info_portrait = (ImageView) findViewById(R.id.iv_user_info_portrait);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         JMessageClient.getMyInfo().getAvatarBitmap(new GetAvatarBitmapCallback() {
             @Override
             public void gotResult(int i, String s, Bitmap bitmap) {

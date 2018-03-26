@@ -1,5 +1,7 @@
 package com.example.jakera.smartchat.Adapter;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,14 +13,21 @@ import com.example.jakera.smartchat.Entry.MessageEntry;
 import com.example.jakera.smartchat.Interface.ItemClickListener;
 import com.example.jakera.smartchat.R;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+
+import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.callback.GetAvatarBitmapCallback;
+import cn.jpush.im.android.api.callback.GetUserInfoCallback;
+import cn.jpush.im.android.api.model.UserInfo;
 
 /**
  * Created by jakera on 18-2-1.
  */
 
 public class MessageRecyclerViewAdapter extends RecyclerView.Adapter {
-    private List<MessageEntry> datas;
+    private List<MessageEntry> datas = new ArrayList<>();
     private ItemClickListener mItemClickListener;
 
     public void setDatas(List<MessageEntry> datas){
@@ -37,12 +46,23 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        MessageViewHolder tempHolder=(MessageViewHolder)holder;
-        MessageEntry tempMessage=datas.get(position);
-        tempHolder.iv_portrait.setImageBitmap(tempMessage.getPortrait());
+        final MessageViewHolder tempHolder = (MessageViewHolder) holder;
+        final MessageEntry tempMessage = datas.get(position);
+
+        JMessageClient.getUserInfo(tempMessage.getUsername(), new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int i, String s, UserInfo userInfo) {
+                userInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
+                    @Override
+                    public void gotResult(int i, String s, Bitmap bitmap) {
+                        tempHolder.iv_portrait.setImageBitmap(bitmap);
+                    }
+                });
+                tempHolder.tv_title.setText(userInfo.getNickname());
+            }
+        });
         //为Item设置监听所用
         tempHolder.iv_portrait.setTag(position);
-        tempHolder.tv_title.setText(tempMessage.getTitle());
         tempHolder.tv_content.setText(tempMessage.getContent());
         tempHolder.tv_time.setText(tempMessage.getTime());
     }

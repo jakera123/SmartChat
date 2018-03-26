@@ -28,8 +28,8 @@ public class MediaManager {
             mMediaPlayer.reset();
         }
         try {
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mMediaPlayer.setOnCompletionListener(onCompletionListener);
+//            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//            mMediaPlayer.setOnCompletionListener(onCompletionListener);
             mMediaPlayer.setDataSource(filePath);
             //一定要加入这句才能够正常地录音
             mMediaPlayer.prepare();

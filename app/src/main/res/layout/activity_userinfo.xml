@@ -136,39 +136,6 @@
         android:layout_height="1dp"
         android:background="#8f07010d" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#8f07010d"
-        android:layout_marginTop="20dp" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#d6ffffff">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/myQR"
-            android:paddingHorizontal="20dp"
-            android:textColor="@color/black"
-            android:layout_centerVertical="true"
-            android:textSize="20sp" />
-
-        <ImageView
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:background="@drawable/robot_portrait"
-            android:layout_alignParentRight="true"
-            android:layout_margin="5dp"
-            android:layout_centerVertical="true" />
-    </RelativeLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#8f07010d" />
 
 
     <Button
