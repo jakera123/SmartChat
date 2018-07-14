@@ -26,7 +26,7 @@
         android:layout_margin="8dp"
         android:padding="5dp"
         android:textSize="20sp"
-        android:text="       你好，欢迎你使用“智言智语”软件，本软件由五邑大学项华珍副教授指导完成，由詹新平开发完成。" />
+        android:text="       你好，欢迎你使用“智言智语”软件，本软件由**学项**副教授指导完成，由詹**开发完成。个人博客：https://blog.csdn.net/jakera" />
 
     <TextView
         android:layout_width="match_parent"

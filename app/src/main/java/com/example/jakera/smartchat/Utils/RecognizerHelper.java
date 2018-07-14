@@ -166,7 +166,6 @@ public class RecognizerHelper {
                 Log.i(TAG,"fail to read stream......");
             }
         }
-
     }
 
     //参考科大迅飞Demo   https://github.com/leoleohan/Voice2Txt
